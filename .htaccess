@@ -1,0 +1,35 @@
+# Houbeles na Apache hostingu (na nginx viz README)
+
+# Vždy přes HTTPS (bez něj nejde kamera ani offline režim)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Správné typy souborů
+AddType application/wasm .wasm
+AddType text/javascript .mjs .js
+AddType application/manifest+json .webmanifest
+AddType image/webp .webp
+AddType font/woff2 .woff2
+AddType application/octet-stream .bin
+
+<IfModule mod_headers.c>
+  # Umožní modelu počítat ve více vláknech (rychlejší poznávání)
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Embedder-Policy "require-corp"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+
+  # Service worker, stránku a data vždy čerstvé, zbytek může v mezipaměti
+  <FilesMatch "(sw\.js|index\.html|\.webmanifest|model\.json|druhy\.json|hlava\.(json|bin)|seznam\.json)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(wasm|mjs|woff2|webp|png|svg)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/json application/manifest+json application/wasm image/svg+xml
+</IfModule>
