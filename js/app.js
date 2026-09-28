@@ -78,16 +78,21 @@ window.addEventListener('appinstalled', () => {
   if (!location.hash || location.hash === '#/') route();
 });
 
-// Service worker: offline chod a vícevláknový výpočet modelu
+// Service worker: offline chod, aktualizace a vícevláknový výpočet modelu
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').then((reg) => {
-    // po první instalaci se stránka jednou přenačte, aby ji řídil service worker (rychlejší model)
-    if (!navigator.serviceWorker.controller && !sessionStorage.getItem('swReloaded')) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        sessionStorage.setItem('swReloaded', '1');
-        if (!location.hash.startsWith('#/hledat')) location.reload();
-      }, { once: true });
-    }
-    return reg;
+  const hadController = !!navigator.serviceWorker.controller;
+  // nový service worker převzal řízení → přenačíst, ať běží nová verze
+  // (a po první instalaci taky, aby šel model počítat ve více vláknech)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    const last = +sessionStorage.getItem('swReloadAt') || 0;
+    if (Date.now() - last < 15000) return; // pojistka proti opakovanému přenačítání
+    sessionStorage.setItem('swReloadAt', String(Date.now()));
+    if (location.hash.startsWith('#/hledat')) return;
+    if (hadController) toast('Nová verze Houbelesu, načítám…', { kind: 'ok' });
+    setTimeout(() => location.reload(), hadController ? 700 : 0);
+  });
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+    // při návratu do appky zkontrolovat, jestli není nová verze
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
   }).catch((e) => console.warn('SW:', e));
 }
