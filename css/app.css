@@ -296,3 +296,110 @@ body.fullscreen .tabbar { display: none; }
 .card .spinner { border-color: var(--line); border-top-color: var(--moss); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* ---------- Dourčení otázkou ---------- */
+.ask { margin-top: 14px; padding: 14px; background: var(--moss-soft); }
+.ask-head { display: flex; align-items: center; gap: 8px; font: 800 13px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--moss-dark); }
+.ask-head .ic { width: 20px; height: 20px; }
+.ask-q { font: 800 21px/1.15 var(--display); margin: 8px 0 0; }
+.ask-hint { margin: 4px 0 0; font-size: 14px; font-weight: 700; color: var(--muted); line-height: 1.35; }
+.ask-opts { display: grid; gap: 8px; margin-top: 12px; }
+.ask-opts .btn.block { justify-content: flex-start; text-align: left; box-shadow: var(--shadow-sm); }
+.ask-opts .btn.ghost { justify-self: center; color: var(--muted); }
+.ask-done { display: flex; align-items: center; gap: 8px; margin: 12px 0 0; font-size: 14px; font-weight: 700; line-height: 1.3; }
+.ask-done .ic { width: 20px; height: 20px; flex: none; color: var(--moss); }
+.ask-done span { flex: 1; }
+.ask-done .btn { min-height: 32px; padding: 4px 10px; text-decoration: underline; }
+
+/* ---------- Rostou houby? ---------- */
+.pocasi { margin-top: 16px; padding: 12px 14px; display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; }
+.pocasi .znak { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--ink); background: #e7e3d8; }
+.pocasi .znak .ic { width: 26px; height: 26px; }
+.pocasi b { display: block; font: 800 20px/1.1 var(--display); }
+.pocasi p { margin: 3px 0 0; font-size: 14px; font-weight: 700; line-height: 1.35; }
+.pocasi .btn, .pocasi small { grid-column: 1 / -1; }
+.pocasi small { margin-top: -2px; font-size: 12px; font-weight: 700; line-height: 1.3; color: var(--muted); }
+.pocasi.ano .znak { background: var(--moss); color: #fff; }
+.pocasi.mozna .znak { background: var(--amber); }
+.pocasi.zima .znak { background: var(--sky); color: #fff; }
+
+/* ---------- Záloha a sdílení ---------- */
+.backup p { margin: 0 0 10px; font-size: 14px; font-weight: 700; line-height: 1.4; }
+.backup p.muted { margin-bottom: 12px; }
+.backup-hint { margin: 0 0 12px; }
+
+/* ---------- Kvíz ---------- */
+.kviz-znak { width: 46px; height: 46px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--ink); background: var(--moss); color: #fff; }
+.kviz-znak .ic { width: 26px; height: 26px; }
+a.card.kviz-entry { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 14px; background: var(--amber-soft); }
+.kviz-entry .kviz-znak { width: 42px; height: 42px; background: var(--amber); color: var(--ink); }
+.kviz-entry .t { flex: 1; min-width: 0; line-height: 1.25; }
+.kviz-entry b { display: block; font: 800 19px/1.1 var(--display); }
+.kviz-entry small { font-size: 13px; font-weight: 800; color: var(--muted); }
+.kviz-intro { margin: -4px 0 16px; font-weight: 700; line-height: 1.4; }
+.kviz-mode { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px; text-align: left; }
+.kviz-mode.dvojnici .kviz-znak { background: var(--red); }
+.kviz-mode .t { flex: 1; min-width: 0; display: grid; gap: 2px; font-size: 14px; font-weight: 700; line-height: 1.3; }
+.kviz-mode b { font: 800 21px/1.1 var(--display); }
+.kviz-mode small { font-size: 12.5px; font-weight: 900; color: var(--moss-dark); margin-top: 2px; }
+.kviz-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.kviz-top .btn { min-height: 40px; padding: 6px 8px; }
+.kviz-top .progress { flex: 1; }
+.kviz-top .n { font: 800 18px/1 var(--display); min-width: 44px; text-align: right; }
+.kviz-photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--line); }
+.kviz-q { font-size: 25px; margin: 14px 0 0; }
+.kviz-hint { margin: 2px 0 0; font-size: 14px; font-weight: 800; color: var(--muted); }
+.kviz-opts { display: grid; gap: 9px; margin-top: 12px; }
+.kviz-opts .btn { justify-content: space-between; text-align: left; min-height: 54px; border-radius: 16px; font-size: 17px; box-shadow: var(--shadow-sm); }
+.kviz-opts .btn .ic { width: 24px; height: 24px; }
+.kviz-opts .btn.ok { background: var(--moss); color: #fff; }
+.kviz-opts .btn.bad { background: var(--red); color: #fff; }
+.kviz-opts .btn.off { opacity: .45; box-shadow: none; }
+.kviz-opts.done { pointer-events: none; }
+.kviz-fb { margin-top: 16px; scroll-margin-bottom: calc(var(--tab-h) + 86px + var(--safe-b)); }
+.kviz-ans.ok { background: var(--moss-soft); }
+.kviz-ans .verdict { display: flex; align-items: center; gap: 6px; font: 800 15px/1 var(--display); text-transform: uppercase; letter-spacing: .04em; color: var(--moss-dark); }
+.kviz-ans.bad .verdict { color: var(--red); }
+.kviz-ans .verdict .ic { width: 22px; height: 22px; }
+.kviz-name { font-size: 27px; margin-top: 8px; }
+.kviz-tip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; padding-top: 9px; border-top: 1.5px dashed var(--line); font-size: 14px; font-weight: 700; }
+.kviz-next { position: sticky; bottom: calc(var(--tab-h) + 12px + var(--safe-b)); z-index: 5; margin-top: 16px; }
+.kviz-score { padding: 20px 16px 18px; display: grid; justify-items: center; gap: 2px; text-align: center; }
+.kviz-score.perfect { background: var(--moss-soft); }
+.kviz-score .kviz-znak { width: 76px; height: 76px; background: var(--amber); color: var(--ink); border: var(--border); box-shadow: var(--shadow-sm); margin-bottom: 6px; }
+.kviz-score .kviz-znak .ic { width: 42px; height: 42px; }
+.kviz-score small { font-size: 13px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.kviz-score b { font: 800 54px/1 var(--display); }
+.kviz-score p { margin: 2px 0 6px; font-weight: 700; line-height: 1.35; }
+.kviz-score .muted { font-size: 14px; font-weight: 800; }
+/* ---------- Nejisté určení a sbírka ---------- */
+.tag.unsure { background: var(--amber); }
+.my-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.my-photos a { display: block; text-decoration: none; }
+.my-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; border-bottom: var(--border); }
+.my-photos span { display: block; padding: 5px 7px 6px; font-size: 12px; font-weight: 800; line-height: 1.2; }
+.unsure-mark { display: block; color: #8a5a00; font-weight: 900; }
+/* ---------- Animace: jen jako odezva na akci; „omezit pohyb“ v telefonu je vypne (blok prefers-reduced-motion výš) ---------- */
+@keyframes view-in { from { opacity: 0; translate: 0 6px; } }
+#view.enter { animation: view-in .18s ease-out; }
+@keyframes pop-in { 0% { scale: .6; opacity: 0; } 60% { scale: 1.08; opacity: 1; } 100% { scale: 1; } }
+.conf { animation: pop-in .45s ease-out .1s both; }
+@keyframes blink { 0%, 100% { scale: 1 1; } 50% { scale: 1 .1; } }
+.mascot .eyes { transform-box: fill-box; transform-origin: center; }
+.mascot.go .eyes { animation: blink .28s ease 2; }
+@keyframes hop { 0%, 100% { translate: 0 0; rotate: 0deg; } 35% { translate: 0 -10px; rotate: -5deg; } 70% { translate: 0 0; rotate: 0deg; } 85% { translate: 0 -3px; } }
+.mascot.go { animation: hop .7s ease .45s; }
+@keyframes bump { 0%, 100% { scale: 1; rotate: 0deg; } 40% { scale: 1.25; rotate: -8deg; } 70% { scale: .94; } }
+#tabbar a.bump .ic { animation: bump .45s ease; }
+.fly { position: fixed; z-index: 60; border-radius: 12px; border: 2px solid var(--ink); object-fit: cover; pointer-events: none; }
+@keyframes spore { to { translate: var(--x) var(--y); scale: .4; opacity: 0; } }
+.spore { position: fixed; z-index: 70; width: 9px; height: 9px; margin: -4px 0 0 -4px; border-radius: 50%; border: 1.5px solid var(--ink); pointer-events: none; animation: spore 1.1s ease-out forwards; }
+@keyframes ans-pop { 0% { scale: .95; } 50% { scale: 1.04; } 100% { scale: 1; } }
+@keyframes ans-shake { 0%, 100% { translate: 0; } 20% { translate: -6px; } 40% { translate: 5px; } 60% { translate: -3px; } 80% { translate: 2px; } }
+.kviz-opts .btn.ok { animation: ans-pop .35s ease; }
+.kviz-opts .btn.bad { animation: ans-shake .4s ease; }
+@keyframes lock { 0%, 100% { scale: 1; } 40% { scale: 1.07; } }
+.finder.ok { animation: lock .5s ease-out; }
+/* fotky se jemně objeví, až se načtou (třídu .in přidá app.js) */
+.sp-card img, .mini img, .refs img, .find-row img, .find-card img, .my-photos img, .alt img, .kviz-photo img, .sp-hero img, .res-photos img { opacity: 0; transition: opacity .35s ease; }
+.sp-card img.in, .mini img.in, .refs img.in, .find-row img.in, .find-card img.in, .my-photos img.in, .alt img.in, .kviz-photo img.in, .sp-hero img.in, .res-photos img.in { opacity: 1; }.linkish { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }

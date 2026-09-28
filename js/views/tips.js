@@ -58,7 +58,7 @@ export async function render(root) {
 
     <h2 class="section-title">${ic('info-circle')}O appce</h2>
     <div class="card pad about">
-      <p>Houbeles pozná ${plural(nSpecies, 'druh', 'druhy', 'druhů')} hub z českých lesů. Počítá přímo v telefonu, fotky ani poloha nikam neodcházejí.</p>
+      <p>Houbeles pozná ${plural(nSpecies, 'druh', 'druhy', 'druhů')} hub z českých lesů. Počítá přímo v telefonu, fotky ani poloha nálezů nikam neodcházejí. Jen když si necháš ukázat „Rostou houby?“, dostane služba s počasím přibližné místo (±10 km).</p>
       ${METRICS ? html`<p><b>Jak přesně?</b> V testu na fotkách, které nikdy neviděl, dal správný druh na první místo v ${Math.round(METRICS.top1 * 100)} % případů a mezi pět tipů v ${Math.round(METRICS.top5 * 100)} %. Když hlásí jistotu nad 90 %, měl pravdu v ${Math.round(METRICS.conf90 * 100)} % případů. Z jedné fotky shora jsou některé skupiny těžké (holubinky, pavučince, drobné lupenaté houby), fotka zespodu hodně pomůže.</p>` : ''}
       <p class="muted" style="font-size:12.5px">Verze ${VERSION}</p>
       <p><b>Z čeho se učil:</b> fotky z <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalistu</a> (licence CC, autoři u fotek v atlasu), rozpoznávací model BioCLIP (Imageomics, MIT), jedlost a znaky z Wikidat, popisy z české Wikipedie (CC BY-SA), ikonky Tabler (MIT), písma Baloo 2 a Nunito (OFL).</p>

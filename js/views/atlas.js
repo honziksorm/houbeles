@@ -1,23 +1,32 @@
 // Atlas hub a detail druhu
 
-import { html, ic, plural, MONTH_SHORT, monthIn } from '../ui.js';
-import { loadData, search, SPECIES, BY_ID, SEASON, thumb, LEVEL_NAME } from '../data.js';
-import { allFinds } from '../db.js';
+import { html, ic, plural, fmtDate, MONTH_SHORT, monthIn } from '../ui.js';
+import { loadData, search, SPECIES, BY_ID, SEASON, thumb, LEVEL_NAME, isUnsure } from '../data.js';
+import { allFinds, getKV, blobUrl } from '../db.js';
 import { edTag, traitChips, lookalikeAlerts, altRow } from './result.js';
 
 let lastQuery = '', lastFilter = 'vse';
 
 const FILTERS = [
   ['vse', 'Vše', null], ['jedle', 'Jedlé', null], ['jedovate', 'Jedovaté', null],
-  ['prudce', 'Prudce jedovaté', 'skull'], ['sezona', 'Teď roste', 'calendar'],
+  ['prudce', 'Prudce jedovaté', 'skull'], ['sezona', 'Teď roste', 'calendar'], ['moje', 'Moje sbírka', 'basket'],
 ];
 
 export async function render(root, params) {
   await loadData();
-  const found = new Set((await allFinds()).map((f) => f.cls));
+  // sbírka jako v Seeku: u nalezených druhů tvoje nejnovější fotka
+  const found = new Map();
+  for (const f of await allFinds()) if (f.cls != null && !found.has(f.cls)) found.set(f.cls, f);
+  const myPhoto = new Map();
+  const photoOf = (i) => myPhoto.get(i) || myPhoto.set(i, blobUrl(found.get(i).photos[0])).get(i);
   if (params.has('f')) lastFilter = params.get('f');
+  // vstup do kvízu s dosavadním rekordem
+  const best = await getKV('kvizBest', {});
+  const rec = [['bezne', 'běžné'], ['dvojnici', 'dvojníci']].filter(([k]) => best[k] != null).map(([k, n]) => `${n} ${best[k]}/10`);
   root.innerHTML = html`<div class="page">
     <h1 class="page-title">Atlas hub</h1>
+    <a class="card kviz-entry" href="#/kviz?novy=1"><span class="kviz-znak">${ic('trophy')}</span>
+      <span class="t"><b>Kvíz: poznáš je?</b><small>${rec.length ? `Rekord: ${rec.join(' · ')}` : '10 fotek, 4 možnosti. Trénuj i dvojníky.'}</small></span>${ic('chevron-right')}</a>
     <label class="search">${ic('search')}<input type="search" id="q" placeholder="Hledej houbu česky i latinsky…" value="${lastQuery}" autocomplete="off"></label>
     <div class="chips" id="chips">${FILTERS.map(([k, label, i]) => html`<button class="chip ${k === lastFilter ? 'on' : ''}" data-f="${k}" type="button">${i ? ic(i) : ''}${label}</button>`)}</div>
     <div class="count-line" id="count"></div>
@@ -27,11 +36,14 @@ export async function render(root, params) {
   const grid = root.querySelector('#grid');
   const count = root.querySelector('#count');
   function draw() {
-    const list = search(q.value, lastFilter);
+    const moje = lastFilter === 'moje';
+    const list = search(q.value, moje ? 'vse' : lastFilter).filter((s) => !moje || found.has(s.i));
     const month = new Date().getMonth();
     count.textContent = `${plural(list.length, 'druh', 'druhy', 'druhů')}${lastFilter === 'sezona' ? ` roste ${monthIn(month)}` : ''} · máš nalezeno ${found.size}`;
-    grid.innerHTML = String(html`${list.map((s) => html`<a class="card sp-card ${found.has(s.i) ? 'found' : ''}" href="#/druh/${s.id}">
-      <img loading="lazy" src="${thumb(s)}" alt=""><div><strong>${s.cz}</strong><span class="latin">${s.latin}</span>${edTag(s, true)}</div></a>`)}`);
+    grid.innerHTML = moje && !found.size
+      ? String(html`<div class="card empty" style="grid-column:1/-1">Zatím tu nic není. Ulož první nález a objeví se tady i s tvojí fotkou.</div>`)
+      : String(html`${list.map((s) => html`<a class="card sp-card ${found.has(s.i) ? 'found' : ''}" href="#/druh/${s.id}">
+      <img loading="lazy" src="${found.has(s.i) ? photoOf(s.i) : thumb(s)}" alt=""><div><strong>${s.cz}</strong><span class="latin">${s.latin}</span>${edTag(s, true)}</div></a>`)}`);
   }
   q.oninput = () => { lastQuery = q.value; draw(); };
   root.querySelector('#chips').onclick = (e) => {
@@ -67,7 +79,9 @@ export async function renderSpecies(root, params, id) {
     ${sp.edNote ? html`<div class="card alert info">${ic('info-circle')}<div>${sp.edNote}</div></div>` : ''}
     ${traitChips(sp)}
     ${lookalikeAlerts(sp, 4)}
-    ${finds.length ? html`<a class="card alert info" href="#/nalez/${finds[0].id}" style="text-decoration:none">${ic('basket')}<div><b>Máš ${plural(finds.length, 'nález', 'nálezy', 'nálezů')}</b> tohoto druhu. Naposledy ${new Date(finds[0].date).toLocaleDateString('cs-CZ')}.</div></a>` : ''}
+    ${finds.length ? html`<h2 class="section-title">${ic('basket')}Tvoje nálezy (${finds.length})</h2>
+      <div class="my-photos">${finds.slice(0, 9).map((f) => html`<a class="card" href="#/nalez/${f.id}"><img src="${blobUrl(f.photos[0])}" alt="">
+        <span>${fmtDate(f.date)}${isUnsure(f) ? html`<b class="unsure-mark">nejisté</b>` : ''}</span></a>`)}</div>` : ''}
 
     ${row.length ? html`<h2 class="section-title">${ic('calendar')}Kdy roste</h2>
       <div class="card pad"><div class="season">${row.map((v, m) => html`<i class="${m === month ? 'now' : ''}" style="height:${Math.max(6, Math.round((v / max) * 100))}%"></i>`)}</div>

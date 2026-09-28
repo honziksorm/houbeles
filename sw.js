@@ -1,25 +1,27 @@
 // Service worker: offline chod appky + hlavičky pro vícevláknový výpočet modelu
-const VERSION = '64784cbdf1'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
+const VERSION = '63f4a15ca3'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
 const SHELL = `houbeles-shell-${VERSION}`;
 const DATA = 'houbeles-data-v1';
 
 const SHELL_FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
-  'js/app.js', 'js/verze.js', 'js/ui.js', 'js/icons.js', 'js/data.js', 'js/db.js', 'js/engine.js', 'js/worker.js', 'js/state.js', 'js/badges.js',
-  'js/views/home.js', 'js/views/live.js', 'js/views/result.js', 'js/views/atlas.js', 'js/views/finds.js', 'js/views/tips.js',
+  'js/app.js', 'js/verze.js', 'js/ui.js', 'js/icons.js', 'js/data.js', 'js/db.js', 'js/engine.js', 'js/worker.js', 'js/state.js', 'js/badges.js', 'js/dourceni.js', 'js/uceni.js', 'js/pocasi.js',
+  'js/views/home.js', 'js/views/live.js', 'js/views/result.js', 'js/views/atlas.js', 'js/views/finds.js', 'js/views/tips.js', 'js/views/kviz.js',
+  'js/zaloha.js', 'js/sdileni.js',
   'vendor/ort/ort.wasm.bundle.min.mjs', 'vendor/ort/ort-wasm-simd-threaded.mjs', 'vendor/ort/ort-wasm-simd-threaded.wasm',
   'vendor/fonts/baloo-2-latin-wght-normal.woff2', 'vendor/fonts/baloo-2-latin-ext-wght-normal.woff2',
   'vendor/fonts/nunito-latin-wght-normal.woff2', 'vendor/fonts/nunito-latin-ext-wght-normal.woff2',
-  'data/druhy.json', 'data/hlava.json', 'data/hlava.bin', 'model/model.json',
+  'data/druhy.json', 'data/hlava.json', 'data/hlava.bin', 'data/tridy-v1.json', 'model/model.json',
   'img/ikona.svg', 'img/ikona-180.png', 'img/ikona-192.png', 'img/ikona-512.png', 'img/bez-fotky.svg',
   'img/odznaky/seznam.json',
 ];
 const DEV = self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1';
 
 self.addEventListener('install', (e) => {
-  // cache: 'reload' = vždy čerstvé soubory ze serveru, ne starší z mezipaměti prohlížeče
+  // cache: 'reload' = vždy čerstvé soubory ze serveru, ne starší z mezipaměti prohlížeče;
+  // ?v= obejde i starší kopie na CDN hned po nahrání (hledá se s ignoreSearch)
   e.waitUntil(caches.open(SHELL)
-    .then((c) => c.addAll(SHELL_FILES.map((f) => new Request(f, { cache: 'reload' }))))
+    .then((c) => c.addAll(SHELL_FILES.map((f) => new Request(`${f}${f.includes('?') ? '&' : '?'}v=${VERSION}`, { cache: 'reload' }))))
     .then(() => self.skipWaiting()));
 });
 

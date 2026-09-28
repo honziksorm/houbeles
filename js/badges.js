@@ -63,6 +63,8 @@ export const BADGES = [
     } },
   { id: 'detektiv', name: 'Detektiv', desc: 'Přidej k 10 nálezům i druhou fotku (zespodu nebo třeň).', icon: 'zoom-in', color: '#6cb6f0', check: (c) => ({ n: c.finds.filter((f) => (f.photos || []).length >= 2).length, goal: 10 }) },
   { id: 'desatero', name: 'Houbařské desatero', desc: 'Přečti si všechny rady v appce.', icon: 'shield-check', color: '#72b04f', check: (c) => ({ n: c.kv.tipsRead ? 1 : 0, goal: 1 }) },
+  { id: 'bystre-oko', name: 'Bystré oko', desc: 'Dej v kvízu 10 z 10.', icon: 'trophy', color: '#f5b638',
+    check: (c) => ({ n: Object.values(c.kv.kvizBest || {}).some((n) => n >= 10) ? 1 : 0, goal: 1 }) },
 
   { id: 'urodny-den', name: 'Úrodný den', desc: 'Ulož 10 nálezů za jeden den.', icon: 'basket', color: '#f5b638',
     check: (c) => {

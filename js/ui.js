@@ -64,5 +64,73 @@ export function plural(n, one, few, many) {
   return `${n.toLocaleString('cs-CZ')} ${w}`;
 }
 
+// ---------- Jemné animace (jen jako odezva na akci) ----------
+
+// „Omezit pohyb“ v telefonu: bez animací
+export const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Spustí CSS animaci znovu (třída pryč a zpátky)
+export function replay(el, cls = 'go', ms = 1500) {
+  if (!el) return;
+  el.classList.remove(cls);
+  void el.getBoundingClientRect();
+  el.classList.add(cls);
+  // uklidit až po všech animacích (i vnořených, třeba mrknutí + poskočení maskota)
+  clearTimeout(el._replayT);
+  el._replayT = setTimeout(() => el.classList.remove(cls), ms);
+}
+
+// Číslo „naběhne“ (jistota ve výsledku)
+export function countUp(el, from, to, ms = 700) {
+  if (!el) return;
+  if (calm() || from === to) { el.textContent = `${to} %`; return; }
+  const t0 = performance.now();
+  const step = (now) => {
+    const k = Math.min(1, (now - t0) / ms);
+    el.textContent = `${Math.round(from + (to - from) * (1 - (1 - k) ** 3))} %`;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// Fotka „skočí“ z tlačítka do košíku v dolní liště
+export function flyToBasket(photo, from) {
+  const tab = document.querySelector('#tabbar [data-tab="finds"]');
+  if (!tab) return;
+  if (!calm() && photo && from) {
+    const src = URL.createObjectURL(photo); // vlastní adresa: po přechodu na nález se adresy obrazovky ruší
+    const to = tab.querySelector('.ic').getBoundingClientRect();
+    const img = document.createElement('img');
+    img.className = 'fly';
+    img.src = src;
+    const s = 56;
+    Object.assign(img.style, { width: `${s}px`, height: `${s}px`, left: `${from.left + from.width / 2 - s / 2}px`, top: `${from.top - s / 2}px` });
+    document.body.append(img);
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - from.top;
+    img.animate([
+      { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+      { transform: `translate(${dx * 0.5}px, ${dy * 0.5 - 70}px) scale(.8)`, opacity: 1, offset: 0.45 },
+      { transform: `translate(${dx}px, ${dy}px) scale(.25)`, opacity: 0.2 },
+    ], { duration: 650, easing: 'ease-in' }).finished.then(() => { img.remove(); URL.revokeObjectURL(src); replay(tab, 'bump'); });
+  } else replay(tab, 'bump');
+}
+
+// Výtrusy (malé barevné kuličky) při novém odznáčku, pak zmizí
+export function spores(x, y, n = 24) {
+  if (calm()) return;
+  const colors = ['#72b04f', '#f5b638', '#e5484d', '#fff6e3', '#a894ff', '#9a5b2e'];
+  for (let k = 0; k < n; k++) {
+    const s = document.createElement('i');
+    s.className = 'spore';
+    const a = Math.random() * Math.PI * 2, r = 60 + Math.random() * 90;
+    Object.assign(s.style, { left: `${x}px`, top: `${y}px`, background: colors[k % colors.length], animationDelay: `${Math.random() * 0.15}s` });
+    s.style.setProperty('--x', `${Math.cos(a) * r}px`);
+    s.style.setProperty('--y', `${Math.sin(a) * r - 30}px`);
+    document.body.append(s);
+    setTimeout(() => s.remove(), 1400);
+  }
+}
+
 // Hledání bez ohledu na diakritiku a velikost písmen
 export const fold = (s) => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();

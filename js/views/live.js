@@ -218,15 +218,22 @@ export async function render(root, params) {
     const c = document.createElement('canvas');
     c.width = c.height = Math.min(1200, Math.round(ss));
     c.getContext('2d').drawImage(video, sx, sy, ss, ss, 0, 0, c.width, c.height);
+    // celý záběr v dobré kvalitě pro galerii telefonu (výřez výš slouží k určení)
+    const fk = Math.min(1, 2048 / Math.max(video.videoWidth, video.videoHeight));
+    const fc = document.createElement('canvas');
+    fc.width = Math.round(video.videoWidth * fk);
+    fc.height = Math.round(video.videoHeight * fk);
+    fc.getContext('2d').drawImage(video, 0, 0, fc.width, fc.height);
     stop();
     showMsg(html`<div class="card"><div class="spinner"></div><b>Poznávám…</b></div>`);
     try {
-      const final = (await classifyPixels(toPixels(c, (c.width - c.width / 1.24) / 2, (c.height - c.height / 1.24) / 2, c.width / 1.24))).logp;
+      const { logp: final, embedding } = await classifyPixels(toPixels(c, (c.width - c.width / 1.24) / 2, (c.height - c.height / 1.24) / 2, c.width / 1.24));
       // spojíme s posledními snímky z hledáčku (stabilnější výsledek)
       const recent = history.slice(-2).map((h) => h.logp);
       const logp = averageLogp([final, final, ...recent]);
       const blob = await new Promise((res) => c.toBlob(res, 'image/jpeg', 0.86));
-      const photo = { blob, logp };
+      const full = await new Promise((res) => fc.toBlob(res, 'image/jpeg', 0.9));
+      const photo = { blob, logp, embedding, full };
       if (addMode) addPhoto(photo); else startResult(photo);
       location.hash = '#/vysledek';
     } catch (e) {
@@ -372,7 +379,7 @@ async function openCrop(file, add) {
     const W = area.clientWidth, H = area.clientHeight;
     const sx = ((W - B) / 2 - tx) / scale, sy = ((H - B) / 2 - ty) / scale, ss = B / scale;
     try {
-      const { logp } = await classifyPixels(toPixels(img, sx, sy, ss));
+      const { logp, embedding } = await classifyPixels(toPixels(img, sx, sy, ss));
       const c = document.createElement('canvas');
       const grow = ss * 0.1;
       const gx = Math.max(0, sx - grow), gy = Math.max(0, sy - grow);
@@ -380,7 +387,7 @@ async function openCrop(file, add) {
       c.width = c.height = Math.min(1200, Math.round(gs));
       c.getContext('2d').drawImage(img, gx, gy, gs, gs, 0, 0, c.width, c.height);
       const blob = await new Promise((res) => c.toBlob(res, 'image/jpeg', 0.86));
-      const photo = { blob, logp };
+      const photo = { blob, logp, embedding };
       if (add && session.result) addPhoto(photo); else startResult(photo, file.lastModified || Date.now());
       close();
       if (location.hash === '#/vysledek') window.dispatchEvent(new HashChangeEvent('hashchange'));

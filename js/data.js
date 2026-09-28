@@ -20,6 +20,12 @@ export const EDIBILITY = {
 export const isDangerous = (sp) => sp && ['prudce', 'jedovata', 'psycho'].includes(sp.ed);
 export const isDeadly = (sp) => sp && sp.ed === 'prudce';
 
+// Kdy je určení jisté: při jistotě ≥ 90 % má model pravdu v 96 % případů, pod tím výrazně méně
+export const SURE = 0.9;
+export const findConf = (f) => f.top?.find(([i]) => i === f.cls)?.[1] ?? null;
+// Nález je nejistý, dokud druh někdo nepotvrdí nebo neopraví a appka si nebyla jistá
+export const isUnsure = (f) => !f.fixed && (findConf(f) ?? 0) < SURE;
+
 const TRAIT_LABEL = { hymenium: 'výtrusorodá vrstva', spore: 'výtrusný prach', stipe: 'třeň', ecology: 'výživa', cap: 'klobouk' };
 export const traitLabel = (k) => TRAIT_LABEL[k] || k;
 

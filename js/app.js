@@ -3,13 +3,14 @@
 import { icon } from './icons.js';
 import { revokeUrls } from './db.js';
 import { install } from './state.js';
-import { toast } from './ui.js';
+import { toast, replay } from './ui.js';
 import * as home from './views/home.js';
 import * as live from './views/live.js';
 import * as result from './views/result.js';
 import * as atlas from './views/atlas.js';
 import * as finds from './views/finds.js';
 import * as tips from './views/tips.js';
+import * as kviz from './views/kviz.js';
 
 const ROUTES = [
   [/^\/?$/, home.render, 'home'],
@@ -17,6 +18,7 @@ const ROUTES = [
   [/^\/vysledek$/, result.render, 'home'],
   [/^\/atlas$/, atlas.render, 'atlas'],
   [/^\/druh\/(\d+)$/, atlas.renderSpecies, 'atlas'],
+  [/^\/kviz$/, kviz.render, 'atlas'],
   [/^\/nalezy$/, finds.render, 'finds'],
   [/^\/nalez\/(\d+)$/, finds.renderFind, 'finds'],
   [/^\/rady$/, tips.render, 'tips'],
@@ -50,10 +52,13 @@ async function route() {
     const m = path.match(re);
     if (!m) continue;
     for (const a of tabbar.children) a.classList.toggle('on', a.dataset.tab === tab);
-    if (path !== lastPath) window.scrollTo(0, 0);
+    const newPage = path !== lastPath;
+    if (newPage) window.scrollTo(0, 0);
     lastPath = path;
     try {
       cleanup = await fn(view, params, ...m.slice(1));
+      if (newPage) replay(view, 'enter'); // jemný přechod na novou obrazovku
+      for (const img of view.querySelectorAll('img')) if (img.complete) img.classList.add('in');
     } catch (e) {
       console.error(e);
       view.innerHTML = `<div class="page"><div class="card pad"><b>Něco se pokazilo.</b><br><span class="muted">${String(e.message || e)}</span></div></div>`;
@@ -65,6 +70,13 @@ async function route() {
 
 window.addEventListener('hashchange', route);
 route();
+
+// fotky se po načtení jemně objeví (i ty, které se nenačetly, ať není prázdné místo)
+const shown = (e) => { if (e.target.tagName === 'IMG') e.target.classList.add('in'); };
+document.addEventListener('load', shown, true);
+document.addEventListener('error', shown, true);
+// maskot na klepnutí mrkne a poskočí
+document.addEventListener('click', (e) => replay(e.target.closest?.('.mascot')));
 
 // Android/Chrome nabídne instalaci: schováme si ji pro tlačítko na úvodní obrazovce
 window.addEventListener('beforeinstallprompt', (e) => {

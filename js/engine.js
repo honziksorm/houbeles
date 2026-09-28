@@ -144,6 +144,17 @@ export async function classifyPixels(pixels) {
   }
 }
 
+export const modelVersion = async () => (await modelInfo()).version;
+
+// Otisk uložené fotky (středový výřez jako při focení), pro učení z nálezů
+export async function embedBlob(blob) {
+  const bmp = await createImageBitmap(blob);
+  const s = Math.min(bmp.width, bmp.height) / 1.22;
+  const { embedding } = await classifyPixels(toPixels(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s));
+  bmp.close?.();
+  return embedding;
+}
+
 // Spojí výsledky více fotek + sezóna → pravděpodobnosti.
 // 'sum' = různé fotky téže houby (shora, zespodu), 'avg' = po sobě jdoucí snímky z hledáčku
 export function combine(logps, month = new Date().getMonth(), mode = 'sum') {

@@ -3,12 +3,81 @@
 import { html, raw, plural, monthIn, fmtDate, toast } from '../ui.js';
 import { icon } from '../icons.js';
 import { loadData, inSeason, thumb, SPECIES } from '../data.js';
-import { allFinds, blobUrl } from '../db.js';
+import { allFinds, blobUrl, setKV } from '../db.js';
 import { isModelDownloaded, downloadForOffline, MODEL_MB } from '../engine.js';
 import { MASCOT, install, isInstalled, isIOS } from '../state.js';
+import { weatherPlace, sharePlace, forecast } from '../pocasi.js';
 import { openGallery } from './live.js';
 
 let downloading = null;
+
+// Karta „Rostou houby?“ (odhad v pocasi.js), vrací false, když se nepovedlo nic ukázat
+const ago = (ms) => (ms < 3600e3 ? 'před chvílí' : `před ${Math.round(ms / 3600e3)} h`);
+async function showWeather(box, finds) {
+  try {
+    const place = await weatherPlace(finds);
+    if (!place) { askPlace(box, finds); return true; }
+    const w = await forecast(place);
+    if (!w || !box.isConnected) return false;
+    box.className = `card pocasi ${w.lvl}`;
+    box.innerHTML = html`<span class="znak">${raw(icon(w.icon))}</span>
+      <div><b>${w.title}</b><p>${w.reason}</p></div>
+      <small>Počasí z Open-Meteo pro okolí ±10 km${w.age ? ` · zjištěno ${ago(w.age)}` : ''}
+        · <button class="linkish" type="button" data-w="zmenit">změnit místo</button> · <button class="linkish" type="button" data-w="vypnout">zapomenout místo</button></small>`;
+    box.hidden = false;
+    // místo jde kdykoli změnit (nová poloha po klepnutí) nebo zapomenout
+    box.onclick = async (e) => {
+      const b = e.target.closest('[data-w]');
+      if (!b) return;
+      if (b.dataset.w === 'vypnout') {
+        await setKV('pocasiPoloha', null);
+        await setKV('pocasi', null);
+        toast('Místo je zapomenuté. Nic se neposílá, dokud znovu neklepneš.', { kind: 'ok' });
+        askPlace(box, finds);
+        return;
+      }
+      b.textContent = 'zjišťuji…';
+      try {
+        await sharePlace();
+        await showWeather(box, finds);
+      } catch {
+        b.textContent = 'změnit místo';
+        toast('Polohu se nepodařilo zjistit.');
+      }
+    };
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Bez polohy: nabídne zjištění, o polohu požádá až po klepnutí
+function askPlace(box, finds) {
+  if (!navigator.onLine || !navigator.geolocation || !box.isConnected) return;
+  box.className = 'card pocasi';
+  box.innerHTML = html`<span class="znak">${raw(icon('cloud-rain'))}</span>
+    <div><b>Rostou houby?</b><p>Podle počasí v okolí zjistíš, jestli má smysl vyrazit do lesa.</p></div>
+    <button class="btn small green block" type="button">${raw(icon('map-pin'))}Zjistit pro moje okolí</button>
+    <small>Službě Open-Meteo se pošle jen přibližné místo (±10 km).</small>`;
+  box.hidden = false;
+  const btn = box.querySelector('button');
+  btn.onclick = async () => {
+    btn.disabled = true;
+    btn.textContent = 'Zjišťuji…';
+    try {
+      await sharePlace();
+    } catch (e) {
+      btn.disabled = false;
+      btn.innerHTML = `${icon('map-pin')}Zkusit znovu`;
+      toast(e?.code === 1 ? 'Bez povolení polohy to nepůjde. Povol ji v nastavení prohlížeče.' : 'Polohu se nepodařilo zjistit. Zkus to znovu.');
+      return;
+    }
+    if (!(await showWeather(box, finds)) && box.isConnected) {
+      box.hidden = true;
+      toast('Počasí se teď nepodařilo načíst. Zkus to později.');
+    }
+  };
+}
 
 export async function render(root) {
   await loadData();
@@ -45,6 +114,7 @@ export async function render(root) {
       <div class="progress" hidden><i></i></div>
       <button class="btn green block" id="dl" type="button">${raw(icon('download'))}Stáhnout pro offline</button>
     </div>`}
+    <div class="card pocasi" id="pocasi" hidden></div>
     <h2 class="section-title">${raw(icon('calendar'))}Teď ${monthIn(month)} roste</h2>
     <div class="minis">${season.map((s) => html`<a class="mini" href="#/druh/${s.id}"><img loading="lazy" src="${thumb(s)}" alt="">${s.cz}</a>`)}</div>
     <h2 class="section-title">${raw(icon('basket'))}Poslední nálezy</h2>
@@ -55,6 +125,8 @@ export async function render(root) {
   </div>`;
 
   root.querySelector('#gal').onclick = () => openGallery();
+  // počasí se doplní až po vykreslení, síť domovskou obrazovku nebrzdí
+  showWeather(root.querySelector('#pocasi'), finds);
   const inst = root.querySelector('#inst');
   if (inst) {
     inst.onclick = async () => {
