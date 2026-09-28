@@ -104,6 +104,10 @@ if ('serviceWorker' in navigator) {
     setTimeout(() => location.reload(), hadController ? 700 : 0);
   });
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+    // ať je vidět, že se nová verze stahuje (trvá to chvilku, pak se appka sama načte znovu)
+    reg.addEventListener('updatefound', () => {
+      if (navigator.serviceWorker.controller) toast('Stahuji novou verzi Houbelesu…', { ms: 6000 });
+    });
     // při návratu do appky zkontrolovat, jestli není nová verze
     document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
   }).catch((e) => console.warn('SW:', e));

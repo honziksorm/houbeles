@@ -22,6 +22,7 @@
   --moss: #72b04f;
   --moss-dark: #3f7a25;
   --moss-soft: #e2f0d6;
+  --hrib: #9a5b2e;      /* hlavní tlačítka: hnědá jako klobouk hřibu (červená je jen pro nebezpečí) */
   --red: #e5484d;
   --red-soft: #fde1df;
   --amber: #f5b638;
@@ -72,7 +73,8 @@ a.card:active, button.card:active { transform: translate(2px, 2px); box-shadow: 
   border: var(--border); border-radius: 999px; background: var(--paper); font-weight: 800; text-decoration: none; line-height: 1.15; }
 .btn:active { transform: translate(2px, 2px); box-shadow: none !important; }
 .btn.block { width: 100%; }
-.btn.primary { background: var(--red); color: #fff; box-shadow: var(--shadow-sm); }
+.btn.primary { background: var(--hrib); color: #fff; box-shadow: var(--shadow-sm); }
+.sos .btn.primary { background: var(--red); } /* toxikologické středisko zůstává červené */
 .btn.green { background: var(--moss); color: #fff; box-shadow: var(--shadow-sm); }
 .btn.dark { background: var(--ink); color: #fff; }
 .btn.small { min-height: 38px; padding: 6px 13px; font-size: 14px; }
@@ -80,7 +82,7 @@ a.card:active, button.card:active { transform: translate(2px, 2px); box-shadow: 
 .btn[disabled] { opacity: .5; pointer-events: none; }
 
 .cta { width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; font: 800 23px/1 var(--display);
-  padding: 22px 16px 20px; background: var(--red); color: #fff; border: var(--border); border-radius: 24px; box-shadow: 5px 5px 0 var(--ink); text-decoration: none; }
+  padding: 22px 16px 20px; background: var(--hrib); color: #fff; border: var(--border); border-radius: 24px; box-shadow: 5px 5px 0 var(--ink); text-decoration: none; }
 .cta .ic { width: 32px; height: 32px; }
 .cta:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
 
@@ -167,7 +169,7 @@ body.fullscreen .tabbar { display: none; }
 .shutter-row { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 0 12px; }
 .shutter { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; position: relative; background: #fff; border: 3px solid var(--ink); }
 .shutter svg { position: absolute; inset: -3px; width: 84px; height: 84px; transform: rotate(-90deg); }
-.shutter .core { width: 62px; height: 62px; border-radius: 50%; background: var(--red); border: 3px solid var(--ink); }
+.shutter .core { width: 62px; height: 62px; border-radius: 50%; background: var(--hrib); border: 3px solid var(--ink); }
 .shutter:active .core { transform: scale(.9); }
 .live-msg { position: absolute; left: 20px; right: 20px; top: 42%; transform: translateY(-50%); text-align: center; z-index: 4; font-weight: 800; }
 .live-msg .card { color: var(--ink); padding: 16px; }
@@ -236,7 +238,7 @@ body.fullscreen .tabbar { display: none; }
 .sp-hero .side { display: grid; gap: 8px; }
 .season { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; align-items: end; height: 64px; margin-top: 8px; }
 .season i { background: var(--moss); border: 1.5px solid var(--ink); border-radius: 5px 5px 2px 2px; min-height: 4px; }
-.season i.now { background: var(--red); }
+.season i.now { background: var(--hrib); }
 .season-labels { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; font-size: 10px; font-weight: 800; text-align: center; color: var(--muted); margin-top: 3px; }
 .text { font-size: 15px; line-height: 1.55; }
 .credit { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.4; }

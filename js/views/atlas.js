@@ -86,7 +86,7 @@ export async function renderSpecies(root, params, id) {
     ${row.length ? html`<h2 class="section-title">${ic('calendar')}Kdy roste</h2>
       <div class="card pad"><div class="season">${row.map((v, m) => html`<i class="${m === month ? 'now' : ''}" style="height:${Math.max(6, Math.round((v / max) * 100))}%"></i>`)}</div>
       <div class="season-labels">${MONTH_SHORT.map((m) => html`<span>${m}</span>`)}</div>
-      <div class="credit">Podle měsíců, kdy ho lidé v Evropě fotili. Červeně je tenhle měsíc.</div></div>` : ''}
+      <div class="credit">Podle měsíců, kdy ho lidé v Evropě fotili. Hnědě je tenhle měsíc.</div></div>` : ''}
 
     ${sp.text ? html`<h2 class="section-title">${ic('book-2')}Popis</h2>
       <div class="card pad text">${sp.text}<div class="credit">Zdroj: <a href="${sp.wiki}" target="_blank" rel="noopener">Wikipedie</a> (CC BY-SA)</div></div>` : ''}
