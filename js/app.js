@@ -2,6 +2,8 @@
 
 import { icon } from './icons.js';
 import { revokeUrls } from './db.js';
+import { install } from './state.js';
+import { toast } from './ui.js';
 import * as home from './views/home.js';
 import * as live from './views/live.js';
 import * as result from './views/result.js';
@@ -63,6 +65,18 @@ async function route() {
 
 window.addEventListener('hashchange', route);
 route();
+
+// Android/Chrome nabídne instalaci: schováme si ji pro tlačítko na úvodní obrazovce
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  install.prompt = e;
+  if (!location.hash || location.hash === '#/') route();
+});
+window.addEventListener('appinstalled', () => {
+  install.prompt = null;
+  toast('Houbeles je na ploše. Příště ho spouštěj odtamtud.', { kind: 'ok' });
+  if (!location.hash || location.hash === '#/') route();
+});
 
 // Service worker: offline chod a vícevláknový výpočet modelu
 if ('serviceWorker' in navigator) {

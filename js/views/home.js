@@ -5,7 +5,7 @@ import { icon } from '../icons.js';
 import { loadData, inSeason, thumb, SPECIES } from '../data.js';
 import { allFinds, blobUrl } from '../db.js';
 import { isModelDownloaded, downloadForOffline, MODEL_MB } from '../engine.js';
-import { MASCOT } from '../state.js';
+import { MASCOT, install, isInstalled, isIOS } from '../state.js';
 import { openGallery } from './live.js';
 
 let downloading = null;
@@ -30,9 +30,18 @@ export async function render(root) {
       <a class="cta" href="#/hledat">${raw(icon('camera'))}Najít houbu</a>
       <button class="btn block" id="gal" type="button">${raw(icon('photo'))}Vybrat fotku z galerie</button>
     </div>
+    ${isInstalled() ? '' : html`<div class="card offline-card" id="install" style="background:var(--moss-soft)">
+      <b>${ready ? '' : '1. '}Nainstaluj si Houbeles jako appku</b>
+      ${install.prompt
+        ? html`<span>Bude mít vlastní ikonu na ploše a pojede přes celou obrazovku jako běžná appka.</span>
+          <button class="btn green block" id="inst" type="button">${raw(icon('device-mobile'))}Nainstalovat do telefonu</button>`
+        : isIOS()
+          ? html`<span>V Safari klikni dole na <b>Sdílet</b> (čtvereček se šipkou) a pak na <b>Přidat na plochu</b>. Pak spouštěj Houbeles z plochy.</span>`
+          : html`<span>V menu prohlížeče (<b>⋮</b> vpravo nahoře) zvol <b>Nainstalovat aplikaci</b> nebo <b>Přidat na plochu</b>. Pak spouštěj Houbeles z plochy.</span>`}
+    </div>`}
     ${ready ? '' : html`<div class="card offline-card" id="offline">
-      <b>Stáhni si Houbeles do telefonu</b>
-      <span>Pak bude poznávat houby i v lese bez signálu. Stahuje se jen jednou, asi ${MODEL_MB} MB, ideálně přes Wi-Fi.</span>
+      <b>${isInstalled() ? '' : '2. '}Stáhni poznávání do telefonu</b>
+      <span>Stáhne se „mozek“ appky a fotky do atlasu, aby poznávala houby i v lese bez signálu. Jen jednou, asi ${MODEL_MB} MB, ideálně přes Wi-Fi.</span>
       <div class="progress" hidden><i></i></div>
       <button class="btn green block" id="dl" type="button">${raw(icon('download'))}Stáhnout pro offline</button>
     </div>`}
@@ -46,6 +55,17 @@ export async function render(root) {
   </div>`;
 
   root.querySelector('#gal').onclick = () => openGallery();
+  const inst = root.querySelector('#inst');
+  if (inst) {
+    inst.onclick = async () => {
+      const p = install.prompt;
+      if (!p) return;
+      p.prompt();
+      const { outcome } = await p.userChoice;
+      install.prompt = null;
+      if (outcome !== 'accepted') render(root);
+    };
+  }
   // po aktualizaci appky si potichu doplní fotky nových druhů pro offline
   if (ready && navigator.onLine && !downloading) {
     const bg = () => downloadForOffline().catch(() => {});

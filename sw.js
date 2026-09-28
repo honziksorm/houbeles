@@ -1,5 +1,5 @@
 // Service worker: offline chod appky + hlavičky pro vícevláknový výpočet modelu
-const VERSION = '09339960e3'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
+const VERSION = '2eac5f6516'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
 const SHELL = `houbeles-shell-${VERSION}`;
 const DATA = 'houbeles-data-v1';
 

@@ -5,6 +5,11 @@ export const session = {
   result: null,
 };
 
+// Instalace na plochu: Android pošle událost beforeinstallprompt, iPhone jen návod
+export const install = { prompt: null };
+export const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+export const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 export function startResult(photo, date = Date.now()) {
   session.result = { date, photos: [photo] };
 }
