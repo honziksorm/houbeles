@@ -4,7 +4,7 @@ import { SPECIES, SEASON, loadData } from './data.js';
 
 const MODEL_INFO = 'model/model.json';
 const DATA_CACHE = 'houbeles-data-v1';
-export const MODEL_MB = 105; // model 92 MB + náhledové fotky
+export const MODEL_MB = 115; // model 92 MB + náhledové fotky 573 druhů
 const MEAN = [0.48145466, 0.4578275, 0.40821073];
 const STD = [0.26862954, 0.26130258, 0.27577711];
 const SEASON_WEIGHT = 0.7;
