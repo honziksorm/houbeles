@@ -1,7 +1,7 @@
 // Výsledek určení
 
 import { html, ic, toast, fmtDate, flyToBasket } from '../ui.js';
-import { loadData, SPECIES, EDIBILITY, topK, ladder, thumb, isDangerous, isEdible, hasWarning, isGilled, traitLabel, SURE, sureWord } from '../data.js';
+import { loadData, SPECIES, EDIBILITY, topK, ladder, thumb, isDangerous, isEdible, hasWarning, isGilled, traitLabel, SURE, DANGER_P, sureWord } from '../data.js';
 import { savePhotos } from '../sdileni.js';
 import { combine, modelVersion } from '../engine.js';
 import { applyFinds, refreshFindEmbeddings } from '../uceni.js';
@@ -78,7 +78,7 @@ export async function render(root) {
   const dangers = [...new Set([...topK(probs0, 8), ...top].map((t) => t.sp))]
     .filter((s) => (s !== sp || p < 0.5) && !s.neg && isDangerous(s))
     .map((s) => ({ sp: s, p: Math.max(probs0[s.i], probs[s.i], probsA[s.i]) }))
-    .filter((d) => d.p >= 0.03).sort((a, b) => b.p - a.p).slice(0, 2);
+    .filter((d) => d.p >= DANGER_P).sort((a, b) => b.p - a.p).slice(0, 2);
   const ask = notFungus ? null : pickQuestion(probs, r.answers);
   const answered = answersText(r.answers);
   const urls = r.photos.map((ph) => blobUrl(ph.blob));

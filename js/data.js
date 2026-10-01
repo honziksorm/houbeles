@@ -23,17 +23,29 @@ export const isEdible = (sp) => sp && ['vyborna', 'jedla', 'podminene'].includes
 // Štítek se ukazuje i u výsledku určení: varuje, nikdy neslibuje jedlost
 export const hasWarning = (sp) => sp && ['prudce', 'jedovata', 'psycho', 'opatrne'].includes(sp.ed);
 
-// Lupenaté houby: mezi nimi jsou ty nejjedovatější (muchomůrky, pavučince, čechratky, závojenky)
-const GILLED = new Set(['Amanita', 'Lepiota', 'Macrolepiota', 'Chlorophyllum', 'Agaricus', 'Russula', 'Lactarius', 'Lactifluus',
-  'Cortinarius', 'Tricholoma', 'Clitocybe', 'Infundibulicybe', 'Lepista', 'Entoloma', 'Inocybe', 'Inosperma', 'Galerina',
-  'Armillaria', 'Pleurotus', 'Paxillus', 'Hypholoma', 'Pholiota', 'Kuehneromyces', 'Gymnopilus', 'Psilocybe', 'Stropharia',
-  'Hygrophorus', 'Hygrocybe', 'Cuphophyllus', 'Calocybe', 'Collybia', 'Gymnopus', 'Rhodocollybia', 'Marasmius', 'Mycena',
-  'Laccaria', 'Coprinus', 'Coprinopsis', 'Coprinellus', 'Panaeolus', 'Gomphidius', 'Chroogomphus', 'Hygrophoropsis', 'Megacollybia']);
-export const isGilled = (sp) => !!sp && !sp.neg && ((sp.traits?.hymenium || []).some((v) => v.startsWith('lupen'))
-  || GILLED.has(sp.latin.split(' ')[0]));
+// Lupenaté houby: mezi nimi jsou ty nejjedovatější (muchomůrky, pavučince, čechratky, závojenky).
+// Podle znaku z Wikidat, jinak podle čeledi (u čeledí se smíšenými tvary podle rodu).
+const GILLED_FAMILIES = new Set(['Russulaceae', 'Hygrophoraceae', 'Mycenaceae', 'Amanitaceae', 'Agaricaceae', 'Strophariaceae',
+  'Omphalotaceae', 'Cortinariaceae', 'Hymenogastraceae', 'Psathyrellaceae', 'Tricholomataceae', 'Clitocybaceae', 'Physalacriaceae',
+  'Entolomataceae', 'Phyllotopsidaceae', 'Verrucosporaceae', 'Marasmiaceae', 'Pluteaceae', 'Pleurotaceae', 'Gomphidiaceae',
+  'Lyophyllaceae', 'Porotheleaceae', 'Crepidotaceae', 'Hydnangiaceae', 'Tapinellaceae', 'Bolbitiaceae', 'Omphalinaceae',
+  'Galeropsidaceae', 'Tubariaceae', 'Pseudoclitocybaceae', 'Inocybaceae', 'Panaceae', 'Squamanitaceae', 'Coprinaceae',
+  'Hygrophoropsidaceae', 'Paxillaceae', 'Volvariellaceae', 'Sarcomyxaceae', 'Xeromphalinaceae', 'Macrocystidiaceae', 'Melanoleucaceae']);
+const GILLED_GENERA = new Set(['Lentinus', 'Lentinellus', 'Neolentinus', 'Baeospora', 'Phylloporus', 'Paralepista']);
+const NOT_GILLED = new Set(['Cylindrobasidium', 'Macrotyphula']);
+export function isGilled(sp) {
+  if (!sp || sp.neg) return false;
+  const genus = sp.latin.split(' ')[0];
+  if (NOT_GILLED.has(genus)) return false;
+  return (sp.traits?.hymenium || []).some((v) => v.startsWith('lupen')) || GILLED_GENERA.has(genus)
+    || GILLED_FAMILIES.has(sp.tax?.family?.[1]);
+}
 
 // Kdy je určení „nejspíš“: při ≥ 90 % měl model v testu pravdu v 97 % případů, pod tím výrazně méně
 export const SURE = 0.9;
+// Od jaké pravděpodobnosti varovat před jedovatým druhem mezi tipy. 1 %: podle scripts/16_bezpecnost.py
+// zůstane bez varování 2,4 % fotek jedovatých hub (při 3 % to bylo 3,2 %), zbytečně se varuje u 9 % ostatních.
+export const DANGER_P = 0.01;
 // Jistota slovy: procenta by působila přesněji, než model doopravdy je
 export const sureWord = (p) => (p >= SURE ? 'Nejspíš' : p >= 0.5 ? 'Možná' : 'Nejisté');
 export const findConf = (f) => f.top?.find(([i]) => i === f.cls)?.[1] ?? null;
