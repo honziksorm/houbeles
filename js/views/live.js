@@ -1,7 +1,7 @@
 // Živý hledáček (jako v Seeku) a výřez fotky z galerie
 
-import { html, ic, pct, toast } from '../ui.js';
-import { loadData, ladder, SPECIES, LEVELS, LEVEL_NAME } from '../data.js';
+import { html, ic, toast } from '../ui.js';
+import { loadData, ladder, SPECIES, LEVELS, LEVEL_NAME, sureWord } from '../data.js';
 import { toPixels, classifyPixels, combine, startEngine, isBusy } from '../engine.js';
 import { startResult, addPhoto, session } from '../state.js';
 
@@ -40,6 +40,7 @@ export async function render(root, params) {
         <button class="shutter" id="shot" type="button" aria-label="Vyfotit"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="39" fill="none" stroke="#8fe06a" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 ${circ}"/></svg><div class="core"></div></button>
         <button class="round" id="flip" type="button" aria-label="Otočit kameru">${ic('refresh')}</button>
       </div>
+      <p class="live-note">Appka se může splést. Nic nejez jen podle ní.</p>
     </div>
     <div class="flash" id="flash"></div>
   </div>`;
@@ -154,7 +155,7 @@ export async function render(root, params) {
     }
     const sp = lad[4];
     if (sp.mass >= 0.5) {
-      guess.innerHTML = String(html`${sp.name}<small><i>${sp.latin}</i> · ${pct(sp.mass)}</small>`);
+      guess.innerHTML = String(html`${sp.name}<small><i>${sp.latin}</i></small>`);
     } else {
       const deep = [...lad].reverse().find((l) => l.level !== 'species' && l.mass >= LEVEL_P);
       guess.innerHTML = String(deep
@@ -173,7 +174,7 @@ export async function render(root, params) {
     const p = addMode ? Math.max(...probs) : updateLadder(probs);
     if (addMode) {
       const top = SPECIES[probs.indexOf(Math.max(...probs))];
-      guess.innerHTML = String(html`${top.cz}<small>${pct(p)}</small>`);
+      guess.innerHTML = String(html`${top.cz}<small>${sureWord(p)}</small>`);
     }
     const top = probs.indexOf(Math.max(...probs));
     const isLock = p >= LOCK_P && top === lastTop && !SPECIES[top].neg;

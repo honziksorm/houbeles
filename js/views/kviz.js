@@ -4,7 +4,7 @@ import { html, ic, plural } from '../ui.js';
 import { loadData, SPECIES, EDIBILITY, thumb, isDangerous, seasonScore } from '../data.js';
 import { getKV, setKV } from '../db.js';
 import { BADGES } from '../badges.js';
-import { edTag, lookalikeAlerts, altRow } from './result.js';
+import { warnTag, lookalikeAlerts, altRow } from './result.js';
 import { showBadgeModal } from './finds.js';
 
 const ROUND = 10;
@@ -136,8 +136,8 @@ function afterHtml(q, last) {
       <div class="verdict">${ic(ok ? 'circle-check' : 'x')}${ok ? 'Správně!' : 'Vedle! Správně je:'}</div>
       <h2 class="kviz-name">${sp.cz}</h2>
       <div class="latin">${sp.latin}</div>
-      <div style="margin-top:8px">${edTag(sp)}</div>
-      ${ok ? '' : html`<div class="kviz-tip">Tvůj tip: <b>${ch.cz}</b>${edTag(ch, true)}</div>`}
+      ${warnTag(sp) ? html`<div style="margin-top:8px">${warnTag(sp)}</div>` : ''}
+      ${ok ? '' : html`<div class="kviz-tip">Tvůj tip: <b>${ch.cz}</b>${warnTag(ch, true)}</div>`}
     </div>
     ${danger.map((d) => html`<div class="card alert danger">${ic('skull')}<div>${d}</div></div>`)}
     ${notes.map(({ o, note }) => html`<div class="card alert ${isDangerous(o) ? 'danger' : ''}">${ic('bulb')}<div><b>${sp.cz} × ${o.cz.toLowerCase()}.</b> Jak je rozlišit: ${note}</div></div>`)}

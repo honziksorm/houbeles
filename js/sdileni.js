@@ -75,7 +75,7 @@ export async function savePhotos(f, max = Infinity) {
 
 // ---------- Obrázek nálezu ----------
 
-const DISCLAIMER = 'Určeno appkou, bez záruky. Jedlost vždy ověř u houbaře.';
+const DISCLAIMER = 'Určeno appkou, může být chybně. Nejez houby jen podle appky.';
 
 function rrect(ctx, x, y, w, h, r) {
   ctx.beginPath();

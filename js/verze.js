@@ -1,2 +1,2 @@
 // Verze appky (při sestavení balíčku ji scripts/10_balicek.py přepíše)
-export const VERSION = '5458fff5a2';
+export const VERSION = 'fc21842f7b';

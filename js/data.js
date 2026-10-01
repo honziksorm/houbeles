@@ -8,7 +8,7 @@ export let SEASON = [];           // [třída][měsíc] pravděpodobnost výskyt
 export let METRICS = null;        // naměřená přesnost modelu
 
 export const EDIBILITY = {
-  vyborna: { label: 'Jedlá · výborná', short: 'Výborná', cls: 'ok', icon: 'star' },
+  vyborna: { label: 'Jedlá', short: 'Jedlá', cls: 'ok' }, // „výborná“ by k jídlu lákala
   jedla: { label: 'Jedlá', short: 'Jedlá', cls: 'ok' },
   podminene: { label: 'Jedlá jen tepelně upravená', short: 'Podmíněně', cls: 'cond' },
   opatrne: { label: 'Opatrně, sporná', short: 'Opatrně', cls: 'bad', icon: 'alert-triangle' },
@@ -19,9 +19,23 @@ export const EDIBILITY = {
 };
 export const isDangerous = (sp) => sp && ['prudce', 'jedovata', 'psycho'].includes(sp.ed);
 export const isDeadly = (sp) => sp && sp.ed === 'prudce';
+export const isEdible = (sp) => sp && ['vyborna', 'jedla', 'podminene'].includes(sp.ed);
+// Štítek se ukazuje i u výsledku určení: varuje, nikdy neslibuje jedlost
+export const hasWarning = (sp) => sp && ['prudce', 'jedovata', 'psycho', 'opatrne'].includes(sp.ed);
 
-// Kdy je určení jisté: při jistotě ≥ 90 % má model pravdu v 96 % případů, pod tím výrazně méně
+// Lupenaté houby: mezi nimi jsou ty nejjedovatější (muchomůrky, pavučince, čechratky, závojenky)
+const GILLED = new Set(['Amanita', 'Lepiota', 'Macrolepiota', 'Chlorophyllum', 'Agaricus', 'Russula', 'Lactarius', 'Lactifluus',
+  'Cortinarius', 'Tricholoma', 'Clitocybe', 'Infundibulicybe', 'Lepista', 'Entoloma', 'Inocybe', 'Inosperma', 'Galerina',
+  'Armillaria', 'Pleurotus', 'Paxillus', 'Hypholoma', 'Pholiota', 'Kuehneromyces', 'Gymnopilus', 'Psilocybe', 'Stropharia',
+  'Hygrophorus', 'Hygrocybe', 'Cuphophyllus', 'Calocybe', 'Collybia', 'Gymnopus', 'Rhodocollybia', 'Marasmius', 'Mycena',
+  'Laccaria', 'Coprinus', 'Coprinopsis', 'Coprinellus', 'Panaeolus', 'Gomphidius', 'Chroogomphus', 'Hygrophoropsis', 'Megacollybia']);
+export const isGilled = (sp) => !!sp && !sp.neg && ((sp.traits?.hymenium || []).some((v) => v.startsWith('lupen'))
+  || GILLED.has(sp.latin.split(' ')[0]));
+
+// Kdy je určení „nejspíš“: při ≥ 90 % měl model v testu pravdu v 97 % případů, pod tím výrazně méně
 export const SURE = 0.9;
+// Jistota slovy: procenta by působila přesněji, než model doopravdy je
+export const sureWord = (p) => (p >= SURE ? 'Nejspíš' : p >= 0.5 ? 'Možná' : 'Nejisté');
 export const findConf = (f) => f.top?.find(([i]) => i === f.cls)?.[1] ?? null;
 // Nález je nejistý, dokud druh někdo nepotvrdí nebo neopraví a appka si nebyla jistá
 export const isUnsure = (f) => !f.fixed && (findConf(f) ?? 0) < SURE;
@@ -69,7 +83,6 @@ export function search(q, filter = 'vse', month = new Date().getMonth()) {
   return SPECIES.filter((s) => {
     if (s.neg) return false;
     if (f && !s._q.includes(f)) return false;
-    if (filter === 'jedle') return ['vyborna', 'jedla', 'podminene'].includes(s.ed);
     if (filter === 'jedovate') return ['jedovata', 'psycho', 'prudce', 'opatrne'].includes(s.ed);
     if (filter === 'prudce') return s.ed === 'prudce';
     if (filter === 'sezona') return seasonScore(s.i, month) > 0.55;

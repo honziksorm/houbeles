@@ -1,7 +1,7 @@
 // Moje nálezy, odznáčky a detail nálezu
 
-import { html, ic, raw, plural, fmtDate, pct, toast, spores } from '../ui.js';
-import { loadData, SPECIES, search, thumb, isUnsure, findConf, isDangerous } from '../data.js';
+import { html, ic, raw, plural, fmtDate, toast, spores } from '../ui.js';
+import { loadData, SPECIES, search, thumb, isUnsure, isDangerous } from '../data.js';
 import { isIOS } from '../state.js';
 import { allFinds, getFind, updateFind, deleteFind, getKV, setKV, blobUrl } from '../db.js';
 import { evaluate, badgeSvg } from '../badges.js';
@@ -9,11 +9,11 @@ import { backup, restore } from '../zaloha.js';
 import { shareFind, savePhotos } from '../sdileni.js';
 import { answersText } from '../dourceni.js';
 import { refreshFindEmbeddings } from '../uceni.js';
-import { edTag, unsureTag } from './result.js';
+import { warnTag, unsureTag, eatWarning } from './result.js';
 
-// Štítky nálezu: nejistý má „Nejisté určení“, ale jedovatý druh vždy i své varování
+// Štítky nálezu: nejistý má „Nejisté určení“, jedovatý druh vždy i své varování. Jedlost ne (ta je jen v atlasu)
 const findTags = (f, sp, short = false) => (!sp ? ''
-  : isUnsure(f) ? html`${unsureTag()} ${isDangerous(sp) ? edTag(sp, short) : ''}` : edTag(sp, short));
+  : isUnsure(f) ? html`${unsureTag()} ${isDangerous(sp) ? warnTag(sp, short) : ''}` : warnTag(sp, short));
 
 // Obrázek odznáčku: vygenerovaný (img/odznaky/<id>.png), jinak zástupný
 function badgeArt(b) {
@@ -169,7 +169,8 @@ export async function renderFind(root, params, id) {
     <div style="margin-top:14px">${findTags(f, sp)}</div>
     <h1 class="res-name" style="padding:0">${sp?.cz || 'Neurčeno'}</h1>
     <div class="latin">${sp?.latin || ''}</div>
-    ${sp && isUnsure(f) ? html`<div class="card alert">${ic('alert-triangle')}<div><b>Nejisté určení${findConf(f) != null ? ` (${pct(findConf(f))})` : ''}.</b> Appka si tímhle druhem nebyla jistá. Nejez ji, dokud ji neověří houbař. Až bude druh jistý, potvrď ho nebo oprav níž.</div></div>` : ''}
+    ${sp && isUnsure(f) ? html`<div class="card alert">${ic('alert-triangle')}<div><b>Nejisté určení.</b> Appka si tímhle druhem nebyla jistá. Nejez ji, dokud ji neověří houbař. Až bude druh jistý, potvrď ho nebo oprav níž.</div></div>` : ''}
+    ${sp ? eatWarning() : ''}
     <p style="margin:8px 0 0;font-weight:700">${ic('calendar')} ${new Date(f.date).toLocaleString('cs-CZ', { dateStyle: 'long', timeStyle: 'short' })}</p>
     ${map ? html`<p style="margin:6px 0 0;font-weight:700">${ic('map-pin')} <a href="${map}" target="_blank" rel="noopener">Otevřít místo v Mapy.cz</a> <span class="muted">(±${f.acc || '?'} m)</span></p>` : ''}
     <a class="btn block" href="#/druh/${sp?.id}" style="margin-top:14px">${ic('book-2')}O tomhle druhu v atlasu</a>
@@ -184,8 +185,8 @@ export async function renderFind(root, params, id) {
     ${f.fixed ? html`<p class="ask-done" style="margin:0 0 10px">${ic('circle-check')}<span>Druh je potvrzený. Appka se z tohohle nálezu učí poznávat podobné houby.</span></p>`
       : sp ? html`<button class="btn green block" type="button" data-set="${f.cls}" style="margin-bottom:10px">${ic('check')}Ano, je to ${sp.cz.toLowerCase()}</button>` : ''}
     <p class="muted" style="margin:0 0 8px;font-size:14px">Když víš, co to je, potvrď to nebo oprav. Appka se z toho naučí a podobné houby příště pozná líp. Tipy appky při určení:</p>
-    <div class="stack">${(f.top || []).map(([i, p]) => html`<button class="card alt" type="button" data-set="${i}" style="width:100%;text-align:left;${i === f.cls ? 'background:var(--moss-soft)' : ''}">
-      <img src="${thumb(SPECIES[i])}" alt=""><div class="t"><strong>${SPECIES[i].cz}</strong><span class="latin">${SPECIES[i].latin}</span></div><span class="pct">${pct(p)}</span></button>`)}</div>
+    <div class="stack">${(f.top || []).map(([i]) => html`<button class="card alt" type="button" data-set="${i}" style="width:100%;text-align:left;${i === f.cls ? 'background:var(--moss-soft)' : ''}">
+      <img src="${thumb(SPECIES[i])}" alt=""><div class="t"><strong>${SPECIES[i].cz}</strong><span class="latin">${SPECIES[i].latin}</span></div></button>`)}</div>
     <label class="search" style="margin-top:12px">${ic('search')}<input type="search" id="fix" placeholder="Najít jiný druh…" autocomplete="off"></label>
     <div class="stack" id="fixList" style="margin-top:8px"></div>
 

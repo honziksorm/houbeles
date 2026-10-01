@@ -27,7 +27,7 @@ const PODIVNE = ['Phallus impudicus', 'Clathrus archeri', 'Sparassis crispa', 'A
 const BAREVNE = [['Laccaria amethystina'], ['Cantharellus cibarius'], ['Amanita muscaria'], ['Russula virescens', 'Russula aeruginea', 'Russula cyanoxantha'], ['Aleuria aurantia']];
 
 export const BADGES = [
-  { id: 'prvni-ulovek', name: 'První úlovek', desc: 'Ulož první nález.', icon: 'mushroom', color: '#e5484d', check: (c) => ({ n: c.finds.length, goal: 1 }) },
+  { id: 'prvni-ulovek', name: 'První úlovek', desc: 'Ulož první nález.', icon: 'mushroom', color: '#9a5b2e', check: (c) => ({ n: c.finds.length, goal: 1 }) },
   { id: 'desitka', name: 'Desítka', desc: 'Najdi 10 různých druhů.', icon: 'basket', color: '#72b04f', check: countSpecies(10, () => true) },
   { id: 'zkuseny-houbar', name: 'Zkušený houbař', desc: 'Najdi 50 různých druhů.', icon: 'trees', color: '#f5b638', check: countSpecies(50, () => true) },
   { id: 'mykolog', name: 'Mykolog', desc: 'Najdi 100 různých druhů.', icon: 'book-2', color: '#6cb6f0', check: countSpecies(100, () => true) },
@@ -44,7 +44,7 @@ export const BADGES = [
   { id: 'stromovy-detektiv', name: 'Stromový detektiv', desc: 'Najdi 5 druhů chorošů a dřevokazných hub.', icon: 'trees', color: '#8d6e4a', check: countSpecies(5, (s) => ['Polyporales', 'Hymenochaetales'].includes(order(s))) },
   { id: 'puf', name: 'Puf!', desc: 'Najdi 3 břichatky: pýchavky, pestřce, hvězdovky.', icon: 'circle-check', color: '#c9b79c', check: countSpecies(3, (s) => BRICHATKY.includes(genusOf(s)) || family(s) === 'Lycoperdaceae' || family(s) === 'Geastraceae') },
   { id: 'podivny-les', name: 'Podivný les', desc: 'Najdi 3 podivné houby: hadovku, květnatec, kotrč, ucho Jidášovo nebo hvězdovku.', icon: 'eye', color: '#a894ff', check: countSpecies(3, (s) => PODIVNE.includes(s.latin) || genusOf(s) === 'Geastrum') },
-  { id: 'barevny-kosik', name: 'Barevný košík', desc: 'Fialová lakovka, žlutá liška, červená muchomůrka, zelená holubinka a oranžová mísenka.', icon: 'basket', color: '#ff9aa2',
+  { id: 'barevny-kosik', name: 'Barevný košík', desc: 'Vyfoť fialovou lakovku, žlutou lišku, červenou muchomůrku, zelenou holubinku a oranžovou mísenku.', icon: 'basket', color: '#ff9aa2',
     check: (c) => ({ n: BAREVNE.filter((opts) => c.species.some((s) => opts.includes(s.latin))).length, goal: 5 }) },
 
   { id: 'jarni-smrzovnik', name: 'Jarní smržovník', desc: 'Najdi smrž nebo kačenku od března do května.', icon: 'sun', color: '#72b04f',

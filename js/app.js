@@ -1,9 +1,9 @@
 // Houbeles: přepínání obrazovek a spuštění appky
 
 import { icon } from './icons.js';
-import { revokeUrls } from './db.js';
-import { install } from './state.js';
-import { toast, replay, html } from './ui.js';
+import { revokeUrls, getKV, setKV } from './db.js';
+import { install, MASCOT } from './state.js';
+import { toast, replay, html, raw } from './ui.js';
 import * as home from './views/home.js';
 import * as live from './views/live.js';
 import * as result from './views/result.js';
@@ -68,8 +68,39 @@ async function route() {
   location.hash = '#/';
 }
 
+// Než začneš: bezpečnostní pravidla, která je potřeba odkliknout před prvním použitím.
+// Při změně pravidel zvýšit SOUHLAS, ukážou se všem znovu.
+const SOUHLAS = 1;
+async function safetyGate() {
+  try {
+    if ((await getKV('souhlas', 0)) >= SOUHLAS) return;
+  } catch { /* bez úložiště se pravidla ukážou pokaždé */ }
+  await new Promise((resolve) => {
+    const el = document.createElement('div');
+    el.className = 'modal gate';
+    el.innerHTML = String(html`<div class="card" role="dialog" aria-labelledby="gateTitle">
+      ${raw(MASCOT)}
+      <h2 id="gateTitle">Než začneš</h2>
+      <p class="muted">Houbeles je pomůcka na učení a poznávání hub, ne houbař.</p>
+      <ol>
+        <li><b>Appka se může splést.</b> I když si je jistá a i u jedovatých hub.</li>
+        <li><b>Nikdy nejez houbu jen podle appky.</b> Každou houbu na jídlo ukaž zkušenému houbaři nebo v houbařské poradně.</li>
+        <li><b>Při podezření na otravu hned volej</b> Toxikologické středisko <a href="tel:+420224919293">224&nbsp;919&nbsp;293</a> nebo záchranku <a href="tel:155">155</a>.</li>
+      </ol>
+      <button class="btn primary block" id="souhlas" type="button">Rozumím</button>
+      <p class="gate-links"><a href="podminky.html">Podmínky použití</a> · <a href="soukromi.html">Zásady ochrany soukromí</a></p>
+    </div>`);
+    document.body.append(el);
+    el.querySelector('#souhlas').onclick = async () => {
+      try { await setKV('souhlas', SOUHLAS); } catch { /* příště se zeptá znovu */ }
+      el.remove();
+      resolve();
+    };
+  });
+}
+
 window.addEventListener('hashchange', route);
-route();
+safetyGate().then(route);
 
 // fotky se po načtení jemně objeví (i ty, které se nenačetly, ať není prázdné místo)
 const shown = (e) => { if (e.target.tagName === 'IMG') e.target.classList.add('in'); };

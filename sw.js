@@ -1,5 +1,5 @@
 // Service worker: offline chod appky + hlavičky pro vícevláknový výpočet modelu
-const VERSION = '5458fff5a2'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
+const VERSION = 'fc21842f7b'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
 const SHELL = `houbeles-shell-${VERSION}`;
 const DATA = 'houbeles-data-v1';
 
@@ -7,7 +7,7 @@ const SHELL_FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/verze.js', 'js/ui.js', 'js/icons.js', 'js/data.js', 'js/db.js', 'js/engine.js', 'js/worker.js', 'js/state.js', 'js/badges.js', 'js/dourceni.js', 'js/uceni.js', 'js/pocasi.js',
   'js/views/home.js', 'js/views/live.js', 'js/views/result.js', 'js/views/atlas.js', 'js/views/finds.js', 'js/views/tips.js', 'js/views/kviz.js',
-  'js/zaloha.js', 'js/sdileni.js', 'soukromi.html',
+  'js/zaloha.js', 'js/sdileni.js', 'soukromi.html', 'podminky.html',
   'vendor/ort/ort.wasm.bundle.min.mjs', 'vendor/ort/ort-wasm-simd-threaded.mjs', 'vendor/ort/ort-wasm-simd-threaded.wasm',
   'vendor/fonts/baloo-2-latin-wght-normal.woff2', 'vendor/fonts/baloo-2-latin-ext-wght-normal.woff2',
   'vendor/fonts/nunito-latin-wght-normal.woff2', 'vendor/fonts/nunito-latin-ext-wght-normal.woff2',

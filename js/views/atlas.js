@@ -1,14 +1,14 @@
 // Atlas hub a detail druhu
 
 import { html, ic, plural, fmtDate, MONTH_SHORT, monthIn } from '../ui.js';
-import { loadData, search, SPECIES, BY_ID, SEASON, thumb, LEVEL_NAME, isUnsure } from '../data.js';
+import { loadData, search, SPECIES, BY_ID, SEASON, thumb, LEVEL_NAME, isUnsure, isEdible } from '../data.js';
 import { allFinds, getKV, blobUrl } from '../db.js';
-import { edTag, traitChips, lookalikeAlerts, altRow } from './result.js';
+import { edTag, warnTag, gilledWarning, traitChips, lookalikeAlerts, altRow } from './result.js';
 
 let lastQuery = '', lastFilter = 'vse';
 
 const FILTERS = [
-  ['vse', 'Vše', null], ['jedle', 'Jedlé', null], ['jedovate', 'Jedovaté', null],
+  ['vse', 'Vše', null], ['jedovate', 'Jedovaté', null],
   ['prudce', 'Prudce jedovaté', 'skull'], ['sezona', 'Teď roste', 'calendar'], ['moje', 'Moje sbírka', 'basket'],
 ];
 
@@ -43,7 +43,7 @@ export async function render(root, params) {
     grid.innerHTML = moje && !found.size
       ? String(html`<div class="card empty" style="grid-column:1/-1">Zatím tu nic není. Ulož první nález a objeví se tady i s tvojí fotkou.</div>`)
       : String(html`${list.map((s) => html`<a class="card sp-card ${found.has(s.i) ? 'found' : ''}" href="#/druh/${s.id}">
-      <img loading="lazy" src="${found.has(s.i) ? photoOf(s.i) : thumb(s)}" alt=""><div><strong>${s.cz}</strong><span class="latin">${s.latin}</span>${edTag(s, true)}</div></a>`)}`);
+      <img loading="lazy" src="${found.has(s.i) ? photoOf(s.i) : thumb(s)}" alt=""><div><strong>${s.cz}</strong><span class="latin">${s.latin}</span>${warnTag(s, true)}</div></a>`)}`);
   }
   q.oninput = () => { lastQuery = q.value; draw(); };
   root.querySelector('#chips').onclick = (e) => {
@@ -73,12 +73,16 @@ export async function renderSpecies(root, params, id) {
       <img src="${thumb(sp, 0)}" alt="">
       <div class="side">${[1, 2].map((n) => (sp.img?.[n] ? html`<img src="${thumb(sp, n)}" alt="">` : ''))}</div>
     </div>
-    <div style="margin-top:14px">${edTag(sp)}</div>
-    <h1 class="res-name" style="padding:0">${sp.cz}</h1>
+    ${warnTag(sp) ? html`<div style="margin-top:14px">${warnTag(sp)}</div>` : ''}
+    <h1 class="res-name" style="padding:0${warnTag(sp) ? '' : ';margin-top:14px'}">${sp.cz}</h1>
     <div class="latin">${sp.latin}</div>
-    ${sp.edNote ? html`<div class="card alert info">${ic('info-circle')}<div>${sp.edNote}</div></div>` : ''}
+    ${sp.edNote && !isEdible(sp) ? html`<div class="card alert info">${ic('info-circle')}<div>${sp.edNote}</div></div>` : ''}
     ${traitChips(sp)}
     ${lookalikeAlerts(sp, 4)}
+    ${gilledWarning(sp)}
+    ${sp.neg ? '' : html`<h2 class="section-title">${ic('shield-check')}Jedlost</h2>
+      <div class="card pad edibility">${edTag(sp)}${isEdible(sp) && sp.edNote ? html`<p>${sp.edNote}</p>` : ''}
+        <p class="muted">Jen obecný údaj z Wikidat a houbařských atlasů, může být neúplný. Nikdy nejez houbu jen podle appky: před jídlem ji ukaž houbaři nebo v <a href="#/rady?k=poradny">houbařské poradně</a>.</p></div>`}
     ${finds.length ? html`<h2 class="section-title">${ic('basket')}Tvoje nálezy (${finds.length})</h2>
       <div class="my-photos">${finds.slice(0, 9).map((f) => html`<a class="card" href="#/nalez/${f.id}"><img src="${blobUrl(f.photos[0])}" alt="">
         <span>${fmtDate(f.date)}${isUnsure(f) ? html`<b class="unsure-mark">nejisté</b>` : ''}</span></a>`)}</div>` : ''}
@@ -97,7 +101,7 @@ export async function renderSpecies(root, params, id) {
 
     ${similar.length ? html`<h2 class="section-title">${ic('eye')}Podobné druhy</h2>
       <p class="muted" style="margin:-4px 0 0;font-size:14px">S těmito si ho model nejčastěji plete.</p>
-      ${similar.map((s) => altRow(s, null))}` : ''}
+      ${similar.map((s) => altRow(s))}` : ''}
 
     <div class="credit" style="margin-top:18px">Fotky: ${(sp.img || []).map((i) => i.a).filter(Boolean).join(' · ')}. Zdroj iNaturalist, upravený výřez. ${LEVEL_NAME.species}: ${plural(sp.cnt || 0, 'pozorování', 'pozorování', 'pozorování')} v Česku.</div>
   </div>`;

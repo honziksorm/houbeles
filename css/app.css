@@ -410,3 +410,20 @@ a.card.kviz-entry { display: flex; align-items: center; gap: 12px; padding: 10px
   margin: 4px 0 10px; padding: 10px 12px; background: var(--bg); border: 2px dashed var(--line); border-radius: 12px; }
 .prispevek .ucet b { font: 800 19px/1.2 var(--display); letter-spacing: .02em; }
 .prispevek .qr { width: 180px; height: 180px; margin: 14px auto 8px; background: #fff; border: var(--border); border-radius: 12px; padding: 8px; }
+
+/* Bezpečnost: jistota slovy, pevné varování, Než začneš, jedlost jen v atlasu */
+.conf b { font-size: 17px; }
+.alert.eat { background: var(--amber-soft); }
+.live-note { margin: 10px 0 0; text-align: center; font-size: 12.5px; font-weight: 800; opacity: .9; text-shadow: 0 1px 6px rgba(0,0,0,.8); }
+.edibility p { margin: 8px 0 0; font-size: 14px; }
+.edibility p.muted { font-size: 13px; }
+.poradny { margin-top: 10px; }
+.poradny p { margin: 4px 0 10px; font-size: 14px; }
+.gate .card { text-align: left; width: min(400px, 100%); max-height: calc(100dvh - 40px); overflow: auto; }
+.gate .mascot { display: block; width: 76px; height: 70px; margin: 0 auto 6px; }
+.gate h2 { text-align: center; }
+.gate p.muted { text-align: center; margin: 4px 0 10px; font-size: 14px; }
+.gate ol { margin: 0 0 16px; padding-left: 22px; font-size: 15px; line-height: 1.45; }
+.gate li { margin: 8px 0; }
+.gate li a { font-weight: 900; white-space: nowrap; }
+.gate .gate-links { text-align: center; font-size: 13px; margin: 12px 0 0; }
