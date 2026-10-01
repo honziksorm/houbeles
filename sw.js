@@ -1,5 +1,5 @@
 // Service worker: offline chod appky + hlavičky pro vícevláknový výpočet modelu
-const VERSION = '265ec14e07'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
+const VERSION = '5458fff5a2'; // při sestavení balíčku (scripts/10_balicek.py) se nahradí otiskem obsahu
 const SHELL = `houbeles-shell-${VERSION}`;
 const DATA = 'houbeles-data-v1';
 
@@ -7,7 +7,7 @@ const SHELL_FILES = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
   'js/app.js', 'js/verze.js', 'js/ui.js', 'js/icons.js', 'js/data.js', 'js/db.js', 'js/engine.js', 'js/worker.js', 'js/state.js', 'js/badges.js', 'js/dourceni.js', 'js/uceni.js', 'js/pocasi.js',
   'js/views/home.js', 'js/views/live.js', 'js/views/result.js', 'js/views/atlas.js', 'js/views/finds.js', 'js/views/tips.js', 'js/views/kviz.js',
-  'js/zaloha.js', 'js/sdileni.js',
+  'js/zaloha.js', 'js/sdileni.js', 'soukromi.html',
   'vendor/ort/ort.wasm.bundle.min.mjs', 'vendor/ort/ort-wasm-simd-threaded.mjs', 'vendor/ort/ort-wasm-simd-threaded.wasm',
   'vendor/fonts/baloo-2-latin-wght-normal.woff2', 'vendor/fonts/baloo-2-latin-ext-wght-normal.woff2',
   'vendor/fonts/nunito-latin-wght-normal.woff2', 'vendor/fonts/nunito-latin-ext-wght-normal.woff2',
@@ -53,7 +53,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   e.respondWith((async () => {
-    const isNav = req.mode === 'navigate';
+    // appka je jedna stránka (index.html); jiné stránky (zásady soukromí) se načtou samy za sebe
+    const isNav = req.mode === 'navigate' && /\/(index\.html)?$/.test(url.pathname);
     const isThumb = url.pathname.includes('/data/nahledy/');
     // při vývoji: nejdřív síť (ať jsou vidět změny), jinak nejdřív mezipaměť
     if (DEV && !isThumb && !url.pathname.endsWith('.onnx')) {

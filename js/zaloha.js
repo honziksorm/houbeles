@@ -70,6 +70,17 @@ function clean(f) {
   return out;
 }
 
+// Nastavení ze zálohy: jen známé položky se správným typem
+const KV_OK = {
+  tipsRead: (v) => typeof v === 'boolean',
+  geo: (v) => typeof v === 'boolean',
+  galerie: (v) => typeof v === 'boolean',
+  kvizKola: num,
+  lastBackup: num,
+  kvizBest: (v) => !!v && typeof v === 'object' && !Array.isArray(v) && Object.values(v).every(num),
+  pocasiPoloha: (v) => v === null || (!!v && num(v.lat) && num(v.lon)),
+};
+
 // Přidá nálezy ze zálohy, které tu ještě nejsou, a chybějící nastavení.
 // Vrátí počet přidaných nálezů, nebo null, když soubor není záloha z Houbelesu.
 export async function restore(file) {
@@ -79,6 +90,7 @@ export async function restore(file) {
   const finds = data.finds.map(clean).filter(Boolean);
   const n = await importFinds(finds);
   for (const [k, val] of (Array.isArray(data.kv) ? data.kv : []).filter(Array.isArray)) {
+    if (!Object.hasOwn(KV_OK, k) || !KV_OK[k](val)) continue;
     if ((await getKV(k)) == null) await setKV(k, val);
   }
   return n;

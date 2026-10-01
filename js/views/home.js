@@ -5,7 +5,7 @@ import { icon } from '../icons.js';
 import { loadData, inSeason, thumb, SPECIES } from '../data.js';
 import { allFinds, blobUrl, setKV } from '../db.js';
 import { isModelDownloaded, downloadForOffline, MODEL_MB } from '../engine.js';
-import { MASCOT, install, isInstalled, isIOS } from '../state.js';
+import { MASCOT, install, isInstalled, isIOS, isPlayApp } from '../state.js';
 import { weatherPlace, sharePlace, forecast } from '../pocasi.js';
 import { openGallery } from './live.js';
 
@@ -99,7 +99,7 @@ export async function render(root) {
       <a class="cta" href="#/hledat">${raw(icon('camera'))}Najít houbu</a>
       <button class="btn block" id="gal" type="button">${raw(icon('photo'))}Vybrat fotku z galerie</button>
     </div>
-    ${isInstalled() ? '' : html`<div class="card offline-card" id="install" style="background:var(--moss-soft)">
+    ${isInstalled() || isPlayApp() ? '' : html`<div class="card offline-card" id="install" style="background:var(--moss-soft)">
       <b>${ready ? '' : '1. '}Nainstaluj si Houbeles jako appku</b>
       ${install.prompt
         ? html`<span>Bude mít vlastní ikonu na ploše a pojede přes celou obrazovku jako běžná appka.</span>
@@ -109,7 +109,7 @@ export async function render(root) {
           : html`<span>V menu prohlížeče (<b>⋮</b> vpravo nahoře) zvol <b>Nainstalovat aplikaci</b> nebo <b>Přidat na plochu</b>. Pak spouštěj Houbeles z plochy.</span>`}
     </div>`}
     ${ready ? '' : html`<div class="card offline-card" id="offline">
-      <b>${isInstalled() ? '' : '2. '}Stáhni poznávání do telefonu</b>
+      <b>${isInstalled() || isPlayApp() ? '' : '2. '}Stáhni poznávání do telefonu</b>
       <span>Stáhne se „mozek“ appky a fotky do atlasu, aby poznávala houby i v lese bez signálu. Jen jednou, asi ${MODEL_MB} MB, ideálně přes Wi-Fi.</span>
       <div class="progress" hidden><i></i></div>
       <button class="btn green block" id="dl" type="button">${raw(icon('download'))}Stáhnout pro offline</button>

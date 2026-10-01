@@ -405,3 +405,8 @@ a.card.kviz-entry { display: flex; align-items: center; gap: 12px; padding: 10px
 /* fotky se jemně objeví, až se načtou (třídu .in přidá app.js) */
 .sp-card img, .mini img, .refs img, .find-row img, .find-card img, .my-photos img, .alt img, .kviz-photo img, .sp-hero img, .res-photos img { opacity: 0; transition: opacity .35s ease; }
 .sp-card img.in, .mini img.in, .refs img.in, .find-row img.in, .find-card img.in, .my-photos img.in, .alt img.in, .kviz-photo img.in, .sp-hero img.in, .res-photos img.in { opacity: 1; }.linkish { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; cursor: pointer; }
+/* Podpoř Houbeles (jen na webu) */
+.prispevek .ucet { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  margin: 4px 0 10px; padding: 10px 12px; background: var(--bg); border: 2px dashed var(--line); border-radius: 12px; }
+.prispevek .ucet b { font: 800 19px/1.2 var(--display); letter-spacing: .02em; }
+.prispevek .qr { width: 180px; height: 180px; margin: 14px auto 8px; background: #fff; border: var(--border); border-radius: 12px; padding: 8px; }

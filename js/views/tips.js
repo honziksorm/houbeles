@@ -5,6 +5,11 @@ import { loadData, SPECIES, METRICS } from '../data.js';
 import { VERSION } from '../verze.js';
 import { setKV, getKV } from '../db.js';
 import { isModelDownloaded, downloadForOffline, MODEL_MB } from '../engine.js';
+import { isInstalled, isPlayApp } from '../state.js';
+
+// Dobrovolný příspěvek: jen na webu. V appce z Google Play být nesmí (zásady plateb Google Play).
+// Prázdné číslo účtu = karta se neukáže. QR kód img/qr-platba.svg vyrobí scripts/qr_platba.py.
+const UCET = '204084293/0600';
 
 const DESATERO = [
   html`<b>Sbírej jen houby, které bezpečně znáš.</b> Houbeles je pomocník na učení, ne náhrada houbaře.`,
@@ -53,7 +58,7 @@ export async function render(root) {
       ? html`<b>Houbeles je stažený v telefonu</b> a poznává houby i bez signálu.`
       : html`<b>Zatím potřebuje internet.</b> Stáhni si ho (asi ${MODEL_MB} MB), ať funguje i v lese.<div class="progress" hidden style="margin-top:10px"><i></i></div>
         <button class="btn green block" id="dl" type="button" style="margin-top:10px">${ic('download')}Stáhnout pro offline</button>`}
-      <p class="muted" style="font-size:13px;margin:8px 0 0">Na iPhonu přidej Houbeles na plochu (Sdílet → Přidat na plochu), na Androidu „Nainstalovat aplikaci“ v menu prohlížeče.</p>
+      ${isInstalled() || isPlayApp() ? '' : html`<p class="muted" style="font-size:13px;margin:8px 0 0">Na iPhonu přidej Houbeles na plochu (Sdílet → Přidat na plochu), na Androidu „Nainstalovat aplikaci“ v menu prohlížeče.</p>`}
     </div>
 
     <h2 class="section-title">${ic('info-circle')}O appce</h2>
@@ -61,8 +66,18 @@ export async function render(root) {
       <p>Houbeles pozná ${plural(nSpecies, 'druh', 'druhy', 'druhů')} hub z českých lesů. Počítá přímo v telefonu, fotky ani poloha nálezů nikam neodcházejí. Jen když si necháš ukázat „Rostou houby?“, dostane služba s počasím přibližné místo (±10 km).</p>
       ${METRICS ? html`<p><b>Jak přesně?</b> V testu na fotkách, které nikdy neviděl, dal správný druh na první místo v ${Math.round(METRICS.top1 * 100)} % případů a mezi pět tipů v ${Math.round(METRICS.top5 * 100)} %. Když hlásí jistotu nad 90 %, měl pravdu v ${Math.round(METRICS.conf90 * 100)} % případů. Z jedné fotky shora jsou některé skupiny těžké (holubinky, pavučince, drobné lupenaté houby), fotka zespodu hodně pomůže.</p>` : ''}
       <p class="muted" style="font-size:12.5px">Verze ${VERSION}</p>
-      <p><b>Z čeho se učil:</b> fotky z <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalistu</a> (licence CC, autoři u fotek v atlasu), rozpoznávací model BioCLIP (Imageomics, MIT), jedlost a znaky z Wikidat, popisy z české Wikipedie (CC BY-SA), ikonky Tabler (MIT), písma Baloo 2 a Nunito (OFL).</p>
+      <p><b>Z čeho se učil:</b> fotky z <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalistu</a> (licence Creative Commons), rozpoznávací model BioCLIP (Imageomics, MIT), jedlost a znaky z Wikidat, popisy z české Wikipedie (CC BY-SA), ikonky Tabler (MIT), písma Baloo 2 a Nunito (OFL). Fotky v atlasu mají licenci CC0, CC BY nebo CC BY-SA, autoři jsou uvedení u druhu.</p>
+      <p><a href="soukromi.html">Zásady ochrany soukromí</a></p>
     </div>
+
+    ${UCET && !isPlayApp() ? html`<h2 class="section-title">${ic('heart')}Podpoř Houbeles</h2>
+    <div class="card pad about prispevek">
+      <p>Houbeles je zdarma a bez reklam. Jestli tě baví, můžeš na jeho další vývoj přispět libovolnou částkou. Za příspěvek se nic neodemyká, appka je pro všechny stejná.</p>
+      <div class="ucet"><span class="muted">Číslo účtu</span><b>${UCET}</b></div>
+      <button class="btn block" id="copyUcet" type="button">${ic('copy')}Zkopírovat číslo účtu</button>
+      <img class="qr" src="img/qr-platba.svg" alt="QR platba na účet ${UCET}" width="180" height="180">
+      <p class="muted" style="font-size:13px;margin:0">QR kód načteš v bankovní appce. Díky!</p>
+    </div>` : ''}
   </div>`;
 
   // odznáček „Houbařské desatero“: stačí dojet na konec rad
@@ -71,6 +86,11 @@ export async function render(root) {
       if (e.isIntersecting) { io.disconnect(); await setKV('tipsRead', true); toast('Desatero přečteno. Mrkni do Nálezů na nový odznáček!', { kind: 'ok' }); }
     });
     io.observe(root.querySelector('#endTips'));
+  }
+  const copy = root.querySelector('#copyUcet');
+  if (copy) {
+    copy.onclick = () => navigator.clipboard.writeText(UCET)
+      .then(() => toast('Číslo účtu je zkopírované', { kind: 'ok' }), () => toast(`Číslo účtu: ${UCET}`));
   }
   const dl = root.querySelector('#dl');
   if (dl) {

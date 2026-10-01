@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <title>Zásady ochrany soukromí · Houbeles</title>
+  <meta name="description" content="Jak appka Houbeles zachází s fotkami, polohou a dalšími údaji">
+  <meta name="theme-color" content="#f6f0e1">
+  <link rel="icon" href="img/ikona.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    .doc { max-width: 680px; margin: 0 auto; padding: calc(20px + var(--safe-t)) 16px calc(40px + var(--safe-b)); }
+    .doc h1 { font-size: 32px; margin: 14px 0 6px; }
+    .doc h2 { font-size: 21px; margin: 26px 0 8px; }
+    .doc p, .doc li { line-height: 1.55; }
+    .doc ul { padding-left: 20px; }
+    .doc li { margin: 4px 0; }
+    .doc .card { padding: 14px 16px; margin: 16px 0; }
+    .doc .card p { margin: 0; }
+    .doc a { color: var(--moss-dark); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main class="doc">
+    <a class="btn small" href="./#/rady">← Zpět do Houbelesu</a>
+
+    <h1>Zásady ochrany soukromí</h1>
+    <p class="muted">Appka Houbeles · platí od 1. 10. 2026</p>
+
+    <div class="card" style="background:var(--moss-soft)">
+      <p><b>Krátce:</b> Houbeles nemá účty, reklamy ani sledování. Houby rozpoznává přímo v telefonu. Fotky a polohy nálezů zůstávají v telefonu a autor appky je nikdy nedostane. Ven jde jen přibližné místo (±10 km), a to jen když si necháš ukázat „Rostou houby?“.</p>
+    </div>
+
+    <h2>Kdo za appkou stojí</h2>
+    <p>Houbeles vytváří Jan Šorm, soukromá osoba z Česka. S dotazy piš na <a href="mailto:iamhonza.sorm@gmail.com">iamhonza.sorm@gmail.com</a>.</p>
+
+    <h2>Fotky a fotoaparát</h2>
+    <ul>
+      <li>Fotoaparát appka používá jen k focení hub. Poznávání běží přímo v telefonu, fotka se kvůli němu nikam neposílá.</li>
+      <li>Uložené nálezy (fotky, druh, poznámka) jsou jen v úložišti appky v tomhle telefonu.</li>
+      <li>Celé snímky z fotoaparátu si appka může uložit i do telefonu (Stažené soubory nebo Fotky). Vypneš to v Nálezech.</li>
+    </ul>
+
+    <h2>Poloha</h2>
+    <ul>
+      <li><b>Poloha nálezů:</b> když to povolíš, uloží se k nálezu přesné místo. Zůstává jen v telefonu. Vypneš to v Nálezech („Ukládat k nálezům polohu“).</li>
+      <li><b>Rostou houby?:</b> až když na kartu klepneš, appka zjistí polohu, zaokrouhlí ji asi na 10 km a pošle službě <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, která vrátí počasí. Místo se uloží v telefonu a počasí se pro něj obnoví, když appku otevřeš (nejvýš jednou za 3 hodiny). Na kartě ho jde kdykoli zapomenout. Open-Meteo jako každá webová služba vidí i IP adresu telefonu.</li>
+      <li>Když u nálezu klepneš na „Otevřít místo v Mapy.cz“, dostanou souřadnice toho nálezu Mapy.cz.</li>
+    </ul>
+
+    <h2>Záloha a sdílení</h2>
+    <p>Zálohu nálezů nebo obrázek nálezu vytvoří appka jen na tvoje klepnutí a kam ho pošleš, rozhoduješ ty. V záloze jsou fotky, poznámky i polohy nálezů. Obrázek nálezu polohu neobsahuje.</p>
+
+    <h2>Co appka nedělá</h2>
+    <ul>
+      <li>Nemá přihlašování ani účty.</li>
+      <li>Nemá reklamy, analytiku ani sledovací cookies.</li>
+      <li>Nikomu neprodává ani nepředává žádné údaje.</li>
+    </ul>
+
+    <h2>Kde appka běží</h2>
+    <ul>
+      <li>Soubory appky a rozpoznávací model se stahují z <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub Pages</a> (GitHub, Inc.). Server jako u každého webu zpracuje IP adresu a technické údaje (prohlížeč, čas).</li>
+      <li>Když máš Houbeles z Google Play, zpracovává Google údaje o instalaci podle svých zásad.</li>
+      <li>Odkazy na iNaturalist, Wikipedii nebo Mapy.cz se otevřou až na klepnutí a platí pro ně jejich vlastní pravidla.</li>
+    </ul>
+
+    <h2>Smazání údajů</h2>
+    <p>Jednotlivé nálezy smažeš přímo v appce. Všechno najednou (nálezy, nastavení, stažený model) smažeš v nastavení prohlížeče: <b>Nastavení webu → honziksorm.github.io → Vymazat data</b>. Pozor, nálezy bez zálohy pak nejde obnovit. Autor appky žádná tvoje data nemá, takže u něj není co mazat.</p>
+
+    <h2>Děti</h2>
+    <p>Houbeles není určený dětem do 13 let.</p>
+
+    <h2>Změny</h2>
+    <p>Když se zásady změní, nová verze bude na téhle stránce s novým datem.</p>
+  </main>
+</body>
+</html>

@@ -10,6 +10,19 @@ export const install = { prompt: null };
 export const isInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 export const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+// Appka z Google Play startuje s ?zdroj=play (nastavené při balení v PWABuilderu) a Chrome jí dá
+// referrer android-app://. Telefon si to pamatuje: úložiště má appka z Google Play společné s Chromem.
+// V appce z Google Play nesmí být odkaz na příspěvek mimo Google Play (zásady plateb).
+const PLAY = (() => {
+  let v = new URLSearchParams(location.search).get('zdroj') === 'play' || document.referrer.startsWith('android-app://');
+  try {
+    if (v) localStorage.setItem('houbelesPlay', '1');
+    else v = localStorage.getItem('houbelesPlay') === '1';
+  } catch { /* bez úložiště stačí adresa */ }
+  return v;
+})();
+export const isPlayApp = () => PLAY;
+
 export function startResult(photo, date = Date.now()) {
   session.result = { date, photos: [photo] };
 }

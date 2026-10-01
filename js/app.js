@@ -3,7 +3,7 @@
 import { icon } from './icons.js';
 import { revokeUrls } from './db.js';
 import { install } from './state.js';
-import { toast, replay } from './ui.js';
+import { toast, replay, html } from './ui.js';
 import * as home from './views/home.js';
 import * as live from './views/live.js';
 import * as result from './views/result.js';
@@ -61,7 +61,7 @@ async function route() {
       for (const img of view.querySelectorAll('img')) if (img.complete) img.classList.add('in');
     } catch (e) {
       console.error(e);
-      view.innerHTML = `<div class="page"><div class="card pad"><b>Něco se pokazilo.</b><br><span class="muted">${String(e.message || e)}</span></div></div>`;
+      view.innerHTML = html`<div class="page"><div class="card pad"><b>Něco se pokazilo.</b><br><span class="muted">${String(e.message || e)}</span></div></div>`;
     }
     return;
   }

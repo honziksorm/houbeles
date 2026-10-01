@@ -79,6 +79,11 @@ export async function downloadForOffline(onProgress) {
     }));
     onProgress?.(0.9 + 0.1 * n / files.length, 'fotky');
   }
+  // náhledy, které už žádný druh nemá (vyměněné fotky v nové verzi), pryč
+  const want = new Set(files.map((f) => new URL(f, location.href).href));
+  for (const req of await dc.keys()) {
+    if (req.url.includes('/data/nahledy/') && !want.has(req.url)) await dc.delete(req);
+  }
   try { await navigator.storage?.persist?.(); } catch { /* nevadí */ }
   onProgress?.(1, 'hotovo');
 }

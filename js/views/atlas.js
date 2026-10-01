@@ -99,6 +99,6 @@ export async function renderSpecies(root, params, id) {
       <p class="muted" style="margin:-4px 0 0;font-size:14px">S těmito si ho model nejčastěji plete.</p>
       ${similar.map((s) => altRow(s, null))}` : ''}
 
-    <div class="credit" style="margin-top:18px">Fotky: ${(sp.img || []).map((i) => i.a).filter(Boolean).join(' · ')}. Zdroj iNaturalist, licence CC. ${LEVEL_NAME.species}: ${plural(sp.cnt || 0, 'pozorování', 'pozorování', 'pozorování')} v Česku.</div>
+    <div class="credit" style="margin-top:18px">Fotky: ${(sp.img || []).map((i) => i.a).filter(Boolean).join(' · ')}. Zdroj iNaturalist, upravený výřez. ${LEVEL_NAME.species}: ${plural(sp.cnt || 0, 'pozorování', 'pozorování', 'pozorování')} v Česku.</div>
   </div>`;
 }
